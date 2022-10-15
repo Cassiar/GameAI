@@ -8,6 +8,9 @@ public abstract class GOAPAction : MonoBehaviour
     protected Dictionary<string, object> preconditions = new Dictionary<string, object>();
     protected Dictionary<string, object> effects = new Dictionary<string, object>();
 
+    //cost to run this action
+    protected int cost;
+
     /// <summary>
     /// Add a new precondition
     /// </summary>
