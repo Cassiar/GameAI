@@ -25,9 +25,10 @@ public class AMakeFire : GOAPAction
     /// </summary>
     /// <param name="agent"></param>
     /// <exception cref="System.NotImplementedException"></exception>
-    public override void Run(GameObject agent)
+    public override void Run(Agent agent)
     {
         Instantiate(fire);
         fire.transform.position = agent.transform.position;
+        agent.inventory.Remove("kindling");
     }
 }

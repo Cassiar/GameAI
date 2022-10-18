@@ -18,6 +18,10 @@ public class Agent : MonoBehaviour
 
     protected FSMState state;
 
+    //keep a list of what's currently in agent's inventory
+    //currently agent has item or not, not keeping track of quantity
+    public List<string> inventory = new List<string>();
+
     // Start is called before the first frame update
     void Start()
     {

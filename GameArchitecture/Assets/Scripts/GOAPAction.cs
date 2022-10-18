@@ -5,8 +5,8 @@ using UnityEngine;
 public abstract class GOAPAction : MonoBehaviour
 {
     //string is name of the precondition, object is whatever value is needed
-    protected Dictionary<string, object> preconditions = new Dictionary<string, object>();
-    protected Dictionary<string, object> effects = new Dictionary<string, object>();
+    public Dictionary<string, object> preconditions = new Dictionary<string, object>();
+    public Dictionary<string, object> effects = new Dictionary<string, object>();
 
     //cost to run this action
     protected int cost;
@@ -59,5 +59,5 @@ public abstract class GOAPAction : MonoBehaviour
     /// <summary>
     /// Run the action on the game agent
     /// </summary>
-    public abstract void Run(GameObject agent);
+    public abstract void Run(Agent agent);
 }
