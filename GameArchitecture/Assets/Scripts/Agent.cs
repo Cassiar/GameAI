@@ -53,16 +53,7 @@ public abstract class Agent : MonoBehaviour
     /// <summary>
     /// plan what is need to achieve goal
     /// </summary>
-    protected abstract void Planning()
-    {
-        //keep list of list of actions so we can 
-        //keep track of multiple plans that fulfil goal
-        List<List<GOAPAction>> allPlanss = new List<List<GOAPAction>>();
-
-        for (int i = 0; i < actions.Count; i++)
-        {
-        }
-    }
+    protected abstract void Planning();
 
     /// <summary>
     /// execute one specific action
