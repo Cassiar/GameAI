@@ -4,7 +4,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using static Enums;
 
-public class Agent : MonoBehaviour
+public abstract class Agent : MonoBehaviour
 {
     //where on the map is the target
     //no need for height
@@ -18,9 +18,13 @@ public class Agent : MonoBehaviour
 
     protected FSMState state;
 
+    protected float speed = 5.0f;
+
     //keep a list of what's currently in agent's inventory
     //currently agent has item or not, not keeping track of quantity
     public List<string> inventory = new List<string>();
+
+    public List<GOAPAction> plan = new List<GOAPAction>();
 
     // Start is called before the first frame update
     void Start()
@@ -37,7 +41,7 @@ public class Agent : MonoBehaviour
                 Planning();
                 break;
             case FSMState.Move:
-                this.transform.position = targetPos;
+                this.transform.position = Vector3.MoveTowards(this.transform.position, targetPos, speed * Time.deltaTime);
                 break;
             case FSMState.Action:
                 Act();
@@ -49,16 +53,19 @@ public class Agent : MonoBehaviour
     /// <summary>
     /// plan what is need to achieve goal
     /// </summary>
-    protected void Planning()
+    protected abstract void Planning()
     {
+        //keep list of list of actions so we can 
+        //keep track of multiple plans that fulfil goal
+        List<List<GOAPAction>> allPlanss = new List<List<GOAPAction>>();
 
+        for (int i = 0; i < actions.Count; i++)
+        {
+        }
     }
 
     /// <summary>
     /// execute one specific action
     /// </summary>
-    protected void Act()
-    {
-
-    }
+    protected abstract void Act();
 }
