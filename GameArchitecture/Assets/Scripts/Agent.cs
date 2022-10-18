@@ -6,10 +6,9 @@ using static Enums;
 
 public class Agent : MonoBehaviour
 {
-    //where on the map is the agent
+    //where on the map is the target
     //no need for height
-    protected int[] pos = new int[2];
-    protected int[] targetPos = new int[2];
+    protected Vector3 targetPos;
 
     //hold list of all goals agent has
     protected List<string> goals = new List<string> ();
@@ -34,7 +33,7 @@ public class Agent : MonoBehaviour
                 Planning();
                 break;
             case FSMState.Move:
-                this.pos = targetPos;
+                this.transform.position = targetPos;
                 break;
             case FSMState.Action:
                 Act();
