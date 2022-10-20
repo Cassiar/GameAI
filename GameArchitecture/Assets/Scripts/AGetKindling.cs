@@ -9,11 +9,9 @@ public class AGetKindling : GOAPAction
     {
         cost = 9;
 
-        AddPrecondition("noKindling", true);
-        AddPrecondition("atKindling", true);
+        AddPrecondition("noKindling");
 
-        AddEffect("haveKindling", true);
-        AddEffect("atKindling", true);
+        AddEffect("haveKindling");
     }
 
     /// <summary>

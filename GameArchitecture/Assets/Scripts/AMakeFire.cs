@@ -10,14 +10,12 @@ public class AMakeFire : GOAPAction
     void Start()
     {
         cost = 5;
-        AddPrecondition("haveKindling", true);
-        AddPrecondition("atCampsite", true);
+        AddPrecondition("haveKindling");
 
         //making a fire removes the kindling but 
         //doesn't move the character's position
-        AddEffect("noKindling", true);
-        AddEffect("atCampsite", true);
-        AddEffect("litFire", true);
+        AddEffect("noKindling");
+        AddEffect("litFire");
     }
 
     /// <summary>
