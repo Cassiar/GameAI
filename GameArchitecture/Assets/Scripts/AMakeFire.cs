@@ -56,13 +56,23 @@ public class AMakeFire : GOAPAction
         GameObject[] campFires = GameObject.FindGameObjectsWithTag("CampFire");
         for (int i = 0; i < campFires.Length; i++)
         {
-            float dist = Vector3.Distance(agPos, campFires[i].transform.position);
-            if (dist < closetDist)
+            //only check if the campfire isn't lit
+            if (!campFires[i].GetComponent<CampFire>().OnFire)
             {
-                closetDist = dist;
-                closestIndex = i;
+                float dist = Vector3.Distance(agPos, campFires[i].transform.position);
+                if (dist < closetDist)
+                {
+                    closetDist = dist;
+                    closestIndex = i;
+                }
             }
+        }
 
+        //there are no valid places to light a fire, 
+        //so this action is complete
+        if (closestIndex == -1)
+        {
+            return true;
         }
 
         //return false because the action isn't over
