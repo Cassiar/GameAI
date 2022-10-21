@@ -39,8 +39,7 @@ public class AMakeFire : GOAPAction
         {
             if (Vector3.Distance(agPos, agent.target.transform.position) <= 1)
             {
-                Instantiate(fire);
-                fire.transform.position = agent.transform.position;
+                agent.target.GetComponent<CampFire>().CreateFire();
                 agent.inventory.Remove("kindling");
                 return true;
             }

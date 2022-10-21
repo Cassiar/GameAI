@@ -135,6 +135,7 @@ GameObject:
   - component: {fileID: 219142589}
   - component: {fileID: 219142588}
   - component: {fileID: 219142587}
+  - component: {fileID: 219142591}
   m_Layer: 0
   m_Name: CampFire
   m_TagString: CampFire
@@ -220,6 +221,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &219142591
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 219142586}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fad3e7c9ab2b0834f9c8a2904b70d405, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fire: {fileID: 2063394767450224185, guid: 38e697bfb9d8c1b4d8784242cacf0558, type: 3}
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -326,6 +340,7 @@ GameObject:
   - component: {fileID: 815344422}
   - component: {fileID: 815344421}
   - component: {fileID: 815344420}
+  - component: {fileID: 815344424}
   m_Layer: 0
   m_Name: CampFire (2)
   m_TagString: CampFire
@@ -411,6 +426,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &815344424
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 815344419}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fad3e7c9ab2b0834f9c8a2904b70d405, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fire: {fileID: 2063394767450224185, guid: 38e697bfb9d8c1b4d8784242cacf0558, type: 3}
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
@@ -507,6 +535,7 @@ GameObject:
   - component: {fileID: 1480463057}
   - component: {fileID: 1480463056}
   - component: {fileID: 1480463055}
+  - component: {fileID: 1480463059}
   m_Layer: 0
   m_Name: CampFire (1)
   m_TagString: CampFire
@@ -592,6 +621,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1480463059
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1480463054}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fad3e7c9ab2b0834f9c8a2904b70d405, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fire: {fileID: 2063394767450224185, guid: 38e697bfb9d8c1b4d8784242cacf0558, type: 3}
 --- !u!1 &1536121380
 GameObject:
   m_ObjectHideFlags: 0

@@ -7,6 +7,7 @@ public class CampFire : MonoBehaviour
     private bool onFire = false;
 
     public GameObject fire;
+    private GameObject curFire;
 
     /// <summary>
     /// Get if the campfire has a lit flame
@@ -18,7 +19,7 @@ public class CampFire : MonoBehaviour
     void Start()
     {
         //fires will last between 20 and 40 seconds
-        time = Random.Range(20, 40);
+        time = Random.Range(3, 7);
     }
 
     // Update is called once per frame
@@ -27,7 +28,7 @@ public class CampFire : MonoBehaviour
         time -= Time.deltaTime;
         if (time <= 0)
         {
-            Destroy(fire);
+            Destroy(curFire);
             onFire = false;
         }
     }
@@ -37,8 +38,9 @@ public class CampFire : MonoBehaviour
     /// </summary>
     public void CreateFire()
     {
-        Instantiate(fire);
-        time = Random.Range(20, 40);
+        curFire = Instantiate(fire);
+        curFire.transform.position = this.transform.position;
+        time = Random.Range(3, 7);
         onFire = true;
     }
 }
