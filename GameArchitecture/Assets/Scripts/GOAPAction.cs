@@ -67,5 +67,5 @@ public abstract class GOAPAction : MonoBehaviour
     /// <summary>
     /// Run the action on the game agent
     /// </summary>
-    public abstract void Run(Agent agent);
+    public abstract bool Run(Agent agent);
 }

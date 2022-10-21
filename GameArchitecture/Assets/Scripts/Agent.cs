@@ -8,7 +8,7 @@ public abstract class Agent : MonoBehaviour
 {
     //where on the map is the target
     //no need for height
-    protected Vector3 targetPos;
+    public GameObject target;
 
     //hold list of all goals agent has
     protected List<string> goals = new List<string> ();
@@ -33,15 +33,17 @@ public abstract class Agent : MonoBehaviour
     protected List<string> initialState = new List<string>();
 
     // Start is called before the first frame update
-    void Start()
+    public void Start()
     {
         //start in idle/planning state
         state = FSMState.Plan;
+
     }
 
     // Update is called once per frame
-    void Update()
+    public void Update()
     {
+        Debug.Log("State: " + state);
         switch (state) { 
             case FSMState.Plan:
                 bool planDone = Planning();
@@ -52,15 +54,15 @@ public abstract class Agent : MonoBehaviour
                 break;
             case FSMState.Move:
                 //move to target and check if we're close enough to perform action
-                this.transform.position = Vector3.MoveTowards(this.transform.position, targetPos, speed * Time.deltaTime);
-                if (Vector3.Distance(this.transform.position, targetPos) <= 1)
+                this.transform.position = Vector3.MoveTowards(this.transform.position, target.transform.position, speed * Time.deltaTime);
+                if (target != null && Vector3.Distance(this.transform.position, target.transform.position) <= 1)
                 {
                     state = FSMState.Action;
                 }
                 break;
             case FSMState.Action:
                 //check if close enough to perform action
-                if (Vector3.Distance(this.transform.position, targetPos) > 1)
+                if (target != null && Vector3.Distance(this.transform.position, target.transform.position) > 1)
                 {
                     state = FSMState.Move;
                 }
@@ -77,11 +79,120 @@ public abstract class Agent : MonoBehaviour
     /// plan what is need to achieve goal
     /// </summary>
     /// <returns>Returns true when the planning is finished</returns>
-    protected abstract bool Planning();
+    protected bool Planning()
+    {
+
+        //list to store all plans that achieve curent goal
+        List<List<GOAPAction>> curPlans = new List<List<GOAPAction>>();
+        List<int> costs = new List<int>();
+
+        //loop through plans list and find which ones end with 
+        //an effect that accomplishes our goal
+        for (int i = 0; i < allPlans.Count; i++)
+        {
+            Debug.Log(allPlans[i].Count);
+            //loop through each effect of last action in plan
+            for (int j = 0; j < allPlans[i][^1].effects.Count; j++)
+            {
+                //add the whole list of actions to the curPlans list
+                //if the last action can achieve a goal
+                if (allPlans[i][^1].effects[j] == goals[0]) //currently only have one goal for testing
+                {
+                    GOAPAction temp = allPlans[i][0];
+                    //track if the initial state matches this actions preconditions
+                    bool preconMatch = true;
+                    //skip this action if preconditions and initial state don't match
+                    if (temp.preconditions.Count != initialState.Count)
+                    {
+                        continue;
+                    }
+
+                    //check if the initial state matches
+                    //order must be the same
+                    for (int k = 0; k < temp.preconditions.Count; k++)
+                    {
+                        if (temp.preconditions[k] != initialState[k])
+                        {
+                            preconMatch = false;
+                            break;
+                        }
+                    }
+
+                    if (!preconMatch)
+                    {
+                        continue;
+                    }
+
+                    curPlans.Add(allPlans[i]);
+                    //calculate cost of this plan and add to list
+                    int cost = 0;
+                    for (int k = 0; k < allPlans[i].Count; k++)
+                    {
+                        cost += allPlans[i][k].Cost;
+                    }
+                    costs.Add(cost);
+                    break;
+                }
+            }
+        }
+
+        int cheapestPlan = int.MaxValue;
+        int planIndex = -1;
+        //find the cheapest plan out of all plans
+        //and store the index of that one
+        for (int i = 0; i < curPlans.Count; i++)
+        {
+            if (costs[i] < cheapestPlan)
+            {
+                cheapestPlan = costs[i];
+                planIndex = i;
+            }
+        }
+
+        //save that plan
+        if (planIndex < 0)
+        {
+            return false;
+        }
+        
+        //copy list of actions into plan
+        for(int i = 0; i < curPlans[planIndex].Count; i++)
+        {
+            plan.Add(curPlans[planIndex][i]);
+        }
+        //curPlans[planIndex].CopyTo(plan);
+
+        return true;
+    }
 
     /// <summary>
-    /// execute one specific action
+    /// execute first action in plan then remove action from plan.
     /// </summary>
     /// <returns>Returns true when the action has been compleated</returns>
-    protected abstract bool Act();
+    protected bool Act()
+    {
+        //if we're out of actions go back to the planning stage
+        if (plan.Count <= 0)
+        {
+            state = FSMState.Plan;
+            return false;
+        }
+
+        //get the first action
+        GOAPAction action = plan[0];
+
+        //pass the agent into the run action
+        if (action.Run(this))
+        {
+            //remove this action from the list
+            plan.RemoveAt(0);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+
+
+    }
 }

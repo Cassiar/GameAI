@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class AgMakeFire : Agent
@@ -54,95 +55,17 @@ public class AgMakeFire : Agent
         }
     }
 
-    protected override bool Act()
-    {
-        throw new System.NotImplementedException();
-    }
+    //protected override bool Act()
+    //{
+    //    throw new System.NotImplementedException();
+    //}
 
     /// <summary>
     /// do a breadth first search to find all paths that lead to the goal
     /// </summary>
-    protected override bool Planning()
-    {
+    //protected override bool Planning()
+    //{
 
-        //list to store all plans that achieve curent goal
-        List<List<GOAPAction>> curPlans = new List<List<GOAPAction>>();
-        List<int> costs = new List<int>();
-
-        //loop through plans list and find which ones end with 
-        //an effect that accomplishes our goal
-        for(int i = 0; i < allPlans.Count; i++)
-        {
-            Debug.Log(allPlans[i].Count);
-            //loop through each effect of last action in plan
-            for(int j = 0; j < allPlans[i][^1].effects.Count; j++)
-            {
-                //add the whole list of actions to the curPlans list
-                //if the last action can achieve a goal
-                if (allPlans[i][^1].effects[j] == goals[0]) //currently only have one goal for testing
-                {
-                    GOAPAction temp = allPlans[i][0];
-                    //track if the initial state matches this actions preconditions
-                    bool preconMatch = true;
-                    //skip this action if preconditions and initial state don't match
-                    if (temp.preconditions.Count != initialState.Count)
-                    {
-                        continue;
-                    }
-
-                    //check if the initial state matches
-                    //order must be the same
-                    for (int k = 0; k < temp.preconditions.Count; k++)
-                    {
-                        if (temp.preconditions[k] != initialState[k])
-                        {
-                            preconMatch = false;
-                            break;
-                        }
-                    }
-
-                    if (!preconMatch)
-                    {
-                        continue;
-                    }
-
-                    curPlans.Add(allPlans[i]);
-                    //calculate cost of this plan and add to list
-                    int cost = 0;
-                    for(int k = 0; k < allPlans[i].Count; k++)
-                    {
-                        cost += allPlans[i][k].Cost;
-                    }
-                    costs.Add(cost);
-                    break;
-                }
-            }
-        }
-
-        Debug.Log("all plans count: " + allPlans.Count);
-        Debug.Log("costs count: " + costs.Count);
-
-        int cheapestPlan = int.MaxValue;
-        int planIndex = -1;
-        //find the cheapest plan out of all plans
-        //and store the index of that one
-        for(int i = 0; i < curPlans.Count; i++)
-        {
-            if (costs[i] < cheapestPlan)
-            {
-                cheapestPlan = costs[i];
-                planIndex = i;
-            }
-        }
-
-        //save that plan
-        if (planIndex < 0)
-        {
-            return false;
-        }
-        plan = curPlans[planIndex];
-
-        return true;
-    }
+    //}
 
 }
