@@ -26,7 +26,7 @@ public class AMakeFire : GOAPAction
     public override bool Run(Agent agent)
     {
         //need kindling to make fire
-        if (!agent.inventory.Contains("kindling"))
+        if (!agent.inventory.Contains("haveKindling"))
         {
             //action is over because we can't complete it
             return true;
@@ -40,7 +40,7 @@ public class AMakeFire : GOAPAction
             if (Vector3.Distance(agPos, agent.target.transform.position) <= 1)
             {
                 agent.target.GetComponent<CampFire>().CreateFire();
-                agent.inventory.Remove("kindling");
+                agent.inventory.Remove("haveKindling");
                 return true;
             }
             else

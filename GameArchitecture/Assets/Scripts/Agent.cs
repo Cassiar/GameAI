@@ -28,7 +28,7 @@ public abstract class Agent : MonoBehaviour
 
     //keep list of list of actions so we can 
     //keep track of multiple plans that fulfil goal
-    protected List<List<GOAPAction>> allPlans = new List<List<GOAPAction>>();
+    public List<List<GOAPAction>> allPlans = new List<List<GOAPAction>>();
 
     protected List<string> initialState = new List<string>();
 
@@ -87,6 +87,8 @@ public abstract class Agent : MonoBehaviour
             allPlans.Add(new List<GOAPAction>());
             GOAPAction temp = actions[i];
 
+            Debug.Log("Number of actions: " + actions.Count);
+            Debug.Log("First action in chain: " + temp);
             allPlans[i].Add(temp);
             //add
             //find all paths that this action matches
@@ -138,7 +140,7 @@ public abstract class Agent : MonoBehaviour
         //an effect that accomplishes our goal
         for (int i = 0; i < allPlans.Count; i++)
         {
-            Debug.Log(allPlans[i].Count);
+            //Debug.Log(allPlans[i].Count);
             //loop through each effect of last action in plan
             for (int j = 0; j < allPlans[i][^1].effects.Count; j++)
             {
@@ -147,21 +149,38 @@ public abstract class Agent : MonoBehaviour
                 if (allPlans[i][^1].effects[j] == goals[0]) //currently only have one goal for testing
                 {
                     GOAPAction temp = allPlans[i][0];
+
+                    Debug.Log(temp);
                     //track if the initial state matches this actions preconditions
                     bool preconMatch = true;
-                    //skip this action if preconditions and initial state don't match
-                    if (temp.preconditions.Count != initialState.Count)
-                    {
-                        continue;
-                    }
+                    ////skip this action if preconditions and initial state don't match
+                    //if (temp.preconditions.Count != inventory.Count)
+                    //{
+                    //    continue;
+                    //}
 
                     //check if the initial state matches
-                    //order must be the same
                     for (int k = 0; k < temp.preconditions.Count; k++)
                     {
-                        if (temp.preconditions[k] != initialState[k])
+                        string precondition = temp.preconditions[k];
+                        Debug.Log(precondition);
+                        //set match to false, if we find a match in 
+                        //inventory we set to true
+                        //if we don't set to true there's no match,
+                        //so we break out of the loop
+                        preconMatch = false;
+                        for (int l = 0; l < inventory.Count; l++)
                         {
-                            preconMatch = false;
+                            Debug.Log(inventory[l]);
+                            if (precondition == inventory[l])
+                            {
+                                preconMatch = true;
+                                break;
+                            }
+                        }
+
+                        if (!preconMatch)
+                        {
                             break;
                         }
                     }
