@@ -43,7 +43,6 @@ public abstract class Agent : MonoBehaviour
     // Update is called once per frame
     public void Update()
     {
-        Debug.Log("State: " + state);
         switch (state) { 
             case FSMState.Plan:
                 bool planDone = Planning();
@@ -86,40 +85,59 @@ public abstract class Agent : MonoBehaviour
             //add empty list to initialize plans
             allPlans.Add(new List<GOAPAction>());
             GOAPAction temp = actions[i];
-
-            Debug.Log("Number of actions: " + actions.Count);
-            Debug.Log("First action in chain: " + temp);
+            int test = 0;
+            //Debug.Log("Number of actions: " + actions.Count);
+            //Debug.Log("First action in chain: " + temp);
             allPlans[i].Add(temp);
-            //add
-            //find all paths that this action matches
             for (int j = 0; j < actions.Count; j++)
             {
-                //skip if it's the same action
-                if (j == i)
-                {
-                    continue;
-                }
+
                 //skip this action if preconditions don't match
-                if (temp.effects.Count != actions[j].preconditions.Count)
+                //if (temp.effects.Count != actions[j].preconditions.Count)
+                //{
+                //    continue;
+                //}
+
+                bool match = true;
+
+                GOAPAction lastActionInPath = allPlans[i][^1];
+                GOAPAction thisAction = actions[j];
+
+                //skip if it's the same action
+                if (lastActionInPath == thisAction)
                 {
                     continue;
                 }
 
-                bool match = true;
-                for (int k = 0; k < temp.effects.Count; k++)
+                //check if the initial state matches
+                for (int k = 0; k < lastActionInPath.effects.Count; k++)
                 {
-                    //if any of the effects and precons don't match, it's not a valid path
-                    //effects and precons must be in the same order
-                    if (temp.effects[k] != actions[j].preconditions[k])
+                    string effect = lastActionInPath.effects[k];
+                    //set match to false, if we find a match in 
+                    //inventory we set to true
+                    //if we don't set to true there's no match,
+                    //so we break out of the loop
+                    match = false;
+                    for (int l = 0; l < thisAction.preconditions.Count; l++)
                     {
-                        match = false;
+                        //Debug.Log(actions[j].preconditions[l]);
+                        if (effect == thisAction.preconditions[l])
+                        {
+                            match = true;
+                            break;
+                        }
+                    }
+
+                    if (!match)
+                    {
                         break;
                     }
                 }
-
+                //test++;
                 if (match)
                 {
                     allPlans[i].Add(actions[j]);
+                    j = -1; //we've added a new action so we need to keep going on this path
                 }
             }
         }
@@ -150,7 +168,7 @@ public abstract class Agent : MonoBehaviour
                 {
                     GOAPAction temp = allPlans[i][0];
 
-                    Debug.Log(temp);
+                    //Debug.Log(temp);
                     //track if the initial state matches this actions preconditions
                     bool preconMatch = true;
                     ////skip this action if preconditions and initial state don't match
@@ -163,7 +181,7 @@ public abstract class Agent : MonoBehaviour
                     for (int k = 0; k < temp.preconditions.Count; k++)
                     {
                         string precondition = temp.preconditions[k];
-                        Debug.Log(precondition);
+                        //Debug.Log(precondition);
                         //set match to false, if we find a match in 
                         //inventory we set to true
                         //if we don't set to true there's no match,
@@ -171,7 +189,7 @@ public abstract class Agent : MonoBehaviour
                         preconMatch = false;
                         for (int l = 0; l < inventory.Count; l++)
                         {
-                            Debug.Log(inventory[l]);
+                            //Debug.Log(inventory[l]);
                             if (precondition == inventory[l])
                             {
                                 preconMatch = true;

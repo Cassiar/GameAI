@@ -2,18 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AChopWood : GOAPAction
+public class AGetAx : GOAPAction
 {
     // Start is called before the first frame update
     void Start()
     {
-        cost = 4;
-        AddPrecondition("noKindling");
-        AddPrecondition("haveAx");
+        cost = 2;
+        AddPrecondition("noAx");
 
         //making a fire removes the kindling but 
         //doesn't move the character's position
-        AddEffect("haveKindling");
+        AddEffect("haveAx");
     }
 
     /// <summary>
@@ -26,11 +25,11 @@ public class AChopWood : GOAPAction
         Vector3 agPos = agent.transform.position;
         //if the agent is already targeted toward a forest
         //then we check the distance, to see if we can collect or need to move
-        if (agent.target != null && agent.target.tag == "Forest")
+        if (agent.target != null && agent.target.tag == "AxStand")
         {
             if (Vector3.Distance(agPos, agent.target.transform.position) <= 1)
             {
-                agent.inventory.Add("haveKindling");
+                agent.inventory.Add("haveAx");
                 return true;
             }
             else
@@ -42,10 +41,10 @@ public class AChopWood : GOAPAction
         float closetDist = int.MaxValue;
         int closestIndex = -1;
         //get all instances of kindling piles
-        GameObject[] forests = GameObject.FindGameObjectsWithTag("Forest");
-        for (int i = 0; i < forests.Length; i++)
+        GameObject[] axStands = GameObject.FindGameObjectsWithTag("AxStand");
+        for (int i = 0; i < axStands.Length; i++)
         {
-            float dist = Vector3.Distance(agPos, forests[i].transform.position);
+            float dist = Vector3.Distance(agPos, axStands[i].transform.position);
             if (dist < closetDist)
             {
                 closetDist = dist;
@@ -55,7 +54,7 @@ public class AChopWood : GOAPAction
         }
 
         //return false because the action isn't over
-        agent.target = forests[closestIndex];
+        agent.target = axStands[closestIndex];
         return false;
 
     }
