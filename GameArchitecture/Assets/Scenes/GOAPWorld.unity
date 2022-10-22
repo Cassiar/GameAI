@@ -141,7 +141,7 @@ GameObject:
   - component: {fileID: 187539540}
   - component: {fileID: 187539539}
   m_Layer: 0
-  m_Name: AgentMakeFire (2)
+  m_Name: AgentMakeFire-NoAx
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -219,8 +219,8 @@ MonoBehaviour:
   target: {fileID: 0}
   actions:
   - {fileID: 187539542}
-  - {fileID: 187539540}
   - {fileID: 187539541}
+  - {fileID: 187539540}
   - {fileID: 187539539}
   inventory:
   - noAx
