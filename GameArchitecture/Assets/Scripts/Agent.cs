@@ -33,7 +33,7 @@ public abstract class Agent : MonoBehaviour
     protected List<string> initialState = new List<string>();
 
     // Start is called before the first frame update
-    public void Start()
+    void Start()
     {
         //start in idle/planning state
         state = FSMState.Plan;
@@ -74,6 +74,54 @@ public abstract class Agent : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Make all plans
+    /// </summary>
+    protected void MakeAllPlans()
+    {
+        //find all valid plans
+        //loop through all actions
+        for (int i = 0; i < actions.Count; i++)
+        {
+            //add empty list to initialize plans
+            allPlans.Add(new List<GOAPAction>());
+            GOAPAction temp = actions[i];
+
+            allPlans[i].Add(temp);
+            //add
+            //find all paths that this action matches
+            for (int j = 0; j < actions.Count; j++)
+            {
+                //skip if it's the same action
+                if (j == i)
+                {
+                    continue;
+                }
+                //skip this action if preconditions don't match
+                if (temp.effects.Count != actions[j].preconditions.Count)
+                {
+                    continue;
+                }
+
+                bool match = true;
+                for (int k = 0; k < temp.effects.Count; k++)
+                {
+                    //if any of the effects and precons don't match, it's not a valid path
+                    //effects and precons must be in the same order
+                    if (temp.effects[k] != actions[j].preconditions[k])
+                    {
+                        match = false;
+                        break;
+                    }
+                }
+
+                if (match)
+                {
+                    allPlans[i].Add(actions[j]);
+                }
+            }
+        }
+    }
 
     /// <summary>
     /// plan what is need to achieve goal
