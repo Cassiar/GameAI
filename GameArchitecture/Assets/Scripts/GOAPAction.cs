@@ -5,12 +5,17 @@ using UnityEngine;
 public abstract class GOAPAction : MonoBehaviour
 {
     //string is name of the precondition, object is whatever value is needed
-    public List<string> preconditions = new List<string>();
-    public List<string> effects = new List<string>();
+    public List<string> preconditions; 
+    public List<string> effects;
 
     //cost to run this action
     protected int cost;
 
+    private void Start()
+    {
+        preconditions = new List<string>();
+        effects = new List<string>();
+    }
     /// <summary>
     /// Get the cost to perform this action
     /// </summary>

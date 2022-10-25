@@ -4,40 +4,45 @@ using Unity.VisualScripting;
 using UnityEngine;
 using static Enums;
 
-public abstract class Agent : MonoBehaviour
+public class Agent : MonoBehaviour
 {
     //where on the map is the target
     //no need for height
     public GameObject target;
 
     //hold list of all goals agent has
-    protected List<string> goals = new List<string> ();
+    [SerializeField]
+    protected List<string> goals = new List<string>();
 
     //list of all possible actions agent can take
-    public List<GOAPAction> actions = new List<GOAPAction> ();
+    [SerializeField]
+    private List<GOAPAction> actions = new List<GOAPAction>();
 
+    [SerializeField]
     protected FSMState state;
 
     protected float speed = 5.0f;
 
     //keep a list of what's currently in agent's inventory
     //currently agent has item or not, not keeping track of quantity
+    [SerializeField]
     public List<string> inventory = new List<string>();
 
-    public List<GOAPAction> plan = new List<GOAPAction>();
+    private List<GOAPAction> plan = new List<GOAPAction>();
 
     //keep list of list of actions so we can 
     //keep track of multiple plans that fulfil goal
-    public List<List<GOAPAction>> allPlans = new List<List<GOAPAction>>();
+    private List<List<GOAPAction>> allPlans = new List<List<GOAPAction>>();
 
+    [SerializeField]
     protected List<string> initialState = new List<string>();
 
     // Start is called before the first frame update
-    void Start()
+    public void Start()
     {
         //start in idle/planning state
         state = FSMState.Plan;
-
+        MakeAllPlans();
     }
 
     // Update is called once per frame
@@ -85,7 +90,7 @@ public abstract class Agent : MonoBehaviour
             //add empty list to initialize plans
             allPlans.Add(new List<GOAPAction>());
             GOAPAction temp = actions[i];
-            int test = 0;
+            //int test = 0;
             //Debug.Log("Number of actions: " + actions.Count);
             //Debug.Log("First action in chain: " + temp);
             allPlans[i].Add(temp);

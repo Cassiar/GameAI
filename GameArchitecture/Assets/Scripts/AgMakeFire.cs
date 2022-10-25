@@ -8,6 +8,7 @@ public class AgMakeFire : Agent
 
     void Start()
     {
+        base.Start();
         goals.Add("litFire");
         //inventory.Add("noKindling");
 
