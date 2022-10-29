@@ -2,21 +2,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AMakeFire : GOAPAction
+public class ACookHotdog : GOAPAction
 {
     public GameObject fire;
 
     // Start is called before the first frame update
     void Start()
     {
-        cost = 5;
-        time = 6;
-        AddPrecondition("haveKindling");
+        cost = 6;
+        AddPrecondition("haveColddog");
+        AddPrecondition("litFire");
 
         //making a fire removes the kindling but 
         //doesn't move the character's position
-        AddEffect("noKindling");
-        AddEffect("litFire");
+        AddEffect("haveHotdog");
     }
 
     /// <summary>
@@ -27,7 +26,7 @@ public class AMakeFire : GOAPAction
     public override bool Run(Agent agent)
     {
         //need kindling to make fire
-        if (!agent.inventory.Contains("haveKindling"))
+        if (!agent.inventory.Contains("haveColddog"))
         {
             //action is over because we can't complete it
             return true;
@@ -43,7 +42,7 @@ public class AMakeFire : GOAPAction
             if (agent.target.GetComponent<CampFire>().OnFire)
             {
                 closest = GetClosest(agPos);
-                if(closest == null)
+                if (closest == null)
                 {
                     return true;
                 }
@@ -55,25 +54,10 @@ public class AMakeFire : GOAPAction
             }
             if (Vector3.Distance(agPos, agent.target.transform.position) <= 1)
             {
-                float sTime = agent.startActionTime;
-                //update the time agent started the action
-                if (sTime <= 0)
-                {
-                    agent.startActionTime = curTime;
-                }
-                //spin wheels to imitate time to complete action
-                if (agent.startActionTime + time <= curTime)
-                {
-                    agent.target.GetComponent<CampFire>().CreateFire();
-                    agent.inventory.Remove("haveKindling");
-                    agent.inventory.Add("noKindling");
-                    agent.startActionTime = -1;
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                agent.target.GetComponent<CampFire>().CreateFire();
+                agent.inventory.Remove("haveColddog");
+                agent.inventory.Add("haveHotdog");
+                return true;
             }
             else
             {
@@ -83,7 +67,7 @@ public class AMakeFire : GOAPAction
 
 
         closest = GetClosest(agPos);
-        if(closest == null)
+        if (closest == null)
         {
             return true;
         }

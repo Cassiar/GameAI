@@ -10,6 +10,8 @@ public abstract class GOAPAction : MonoBehaviour
 
     //cost to run this action
     protected int cost;
+    protected float time;
+    protected float curTime = 0;
 
     private void Start()
     {
@@ -22,6 +24,11 @@ public abstract class GOAPAction : MonoBehaviour
     public int Cost
     {
         get { return cost; }
+    }
+
+    void Update()
+    {
+        curTime += Time.deltaTime;
     }
 
     /// <summary>

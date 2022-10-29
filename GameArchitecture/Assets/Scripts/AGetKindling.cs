@@ -9,6 +9,7 @@ public class AGetKindling : GOAPAction
     void Start()
     {
         cost = 9;
+        time = 8;
 
         AddPrecondition("noKindling");
 
@@ -29,9 +30,24 @@ public class AGetKindling : GOAPAction
         {
             if(Vector3.Distance(agPos, agent.target.transform.position) <= 1)
             {
-                agent.inventory.Add("haveKindling"); 
-                agent.inventory.Remove("noKindling");
-                return true;
+                float sTime = agent.startActionTime;
+                //update the time agent started the action
+                if (sTime <= 0)
+                {
+                    agent.startActionTime = curTime;
+                }
+                //spin wheels to imitate time to complete action
+                if (agent.startActionTime + time <= curTime)
+                {
+                    agent.inventory.Add("haveKindling");
+                    agent.inventory.Remove("noKindling");
+                    agent.startActionTime = -1;
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
             else
             {

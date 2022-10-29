@@ -36,6 +36,7 @@ public class Agent : MonoBehaviour
 
     [SerializeField]
     protected List<string> initialState = new List<string>();
+    public float startActionTime = -1;
 
     // Start is called before the first frame update
     public void Start()
