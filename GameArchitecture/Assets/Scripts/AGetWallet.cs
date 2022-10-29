@@ -2,17 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AGetAx : GOAPAction
+public class AGetWallet : GOAPAction
 {
     // Start is called before the first frame update
     void Start()
     {
         cost = 2;
-        AddPrecondition("noAx");
+        AddPrecondition("noWallet");
 
         //making a fire removes the kindling but 
         //doesn't move the character's position
-        AddEffect("haveAx");
+        AddEffect("haveWallet");
     }
 
     /// <summary>
@@ -25,12 +25,12 @@ public class AGetAx : GOAPAction
         Vector3 agPos = agent.transform.position;
         //if the agent is already targeted toward a forest
         //then we check the distance, to see if we can collect or need to move
-        if (agent.target != null && agent.target.tag == "AxStand")
+        if (agent.target != null && agent.target.tag == "Backpack")
         {
             if (Vector3.Distance(agPos, agent.target.transform.position) <= 1)
             {
-                agent.inventory.Add("haveAx");
-                agent.inventory.Remove("noAx");
+                agent.inventory.Add("haveWallet");
+                agent.inventory.Remove("noWallet");
                 return true;
             }
             else
@@ -42,10 +42,10 @@ public class AGetAx : GOAPAction
         float closetDist = int.MaxValue;
         int closestIndex = -1;
         //get all instances of kindling piles
-        GameObject[] axStands = GameObject.FindGameObjectsWithTag("AxStand");
-        for (int i = 0; i < axStands.Length; i++)
+        GameObject[] backpacks = GameObject.FindGameObjectsWithTag("Backpack");
+        for (int i = 0; i < backpacks.Length; i++)
         {
-            float dist = Vector3.Distance(agPos, axStands[i].transform.position);
+            float dist = Vector3.Distance(agPos, backpacks[i].transform.position);
             if (dist < closetDist)
             {
                 closetDist = dist;
@@ -55,7 +55,7 @@ public class AGetAx : GOAPAction
         }
 
         //return false because the action isn't over
-        agent.target = axStands[closestIndex];
+        agent.target = backpacks[closestIndex];
         return false;
 
     }

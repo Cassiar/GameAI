@@ -8,6 +8,8 @@ TagManager:
   - CampFire
   - Forest
   - AxStand
+  - Backpack
+  - HotdogStand
   layers:
   - Default
   - TransparentFX
