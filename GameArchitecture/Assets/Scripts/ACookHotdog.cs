@@ -10,6 +10,7 @@ public class ACookHotdog : GOAPAction
     void Start()
     {
         cost = 6;
+        time = 4;
         AddPrecondition("haveColddog");
         AddPrecondition("litFire");
 
@@ -54,10 +55,25 @@ public class ACookHotdog : GOAPAction
             }
             if (Vector3.Distance(agPos, agent.target.transform.position) <= 1)
             {
-                agent.target.GetComponent<CampFire>().CreateFire();
-                agent.inventory.Remove("haveColddog");
-                agent.inventory.Add("haveHotdog");
-                return true;
+                float sTime = agent.startActionTime;
+                //update the time agent started the action
+                if (sTime <= 0)
+                {
+                    agent.startActionTime = curTime;
+                }
+                //spin wheels to imitate time to complete action
+                if (agent.startActionTime + time <= curTime)
+                {
+                    agent.target.GetComponent<CampFire>().CreateFire();
+                    agent.inventory.Remove("haveColddog");
+                    agent.inventory.Add("haveHotdog");
+                    agent.startActionTime = -1;
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
             else
             {

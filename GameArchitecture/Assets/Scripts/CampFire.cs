@@ -18,8 +18,8 @@ public class CampFire : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //fires will last between 20 and 40 seconds
-        time = Random.Range(3, 7);
+        //fires will last between 15 and 30 seconds
+        time = Random.Range(15, 31);
     }
 
     // Update is called once per frame
@@ -40,7 +40,7 @@ public class CampFire : MonoBehaviour
     {
         curFire = Instantiate(fire);
         curFire.transform.position = this.transform.position;
-        time = Random.Range(3, 7);
+        time = Random.Range(15, 31);
         onFire = true;
     }
 }
