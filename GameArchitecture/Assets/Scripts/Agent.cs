@@ -38,6 +38,8 @@ public class Agent : MonoBehaviour
     protected List<string> initialState = new List<string>();
     public float startActionTime = -1;
 
+    private int curGoal = 0;
+
     // Start is called before the first frame update
     public void Start()
     {
@@ -170,7 +172,7 @@ public class Agent : MonoBehaviour
             {
                 //add the whole list of actions to the curPlans list
                 //if the last action can achieve a goal
-                if (allPlans[i][^1].effects[j] == goals[0]) //currently only have one goal for testing
+                if (allPlans[i][^1].effects[j] == goals[curGoal]) //currently only have one goal for testing
                 {
                     GOAPAction temp = allPlans[i][0];
 
@@ -266,6 +268,15 @@ public class Agent : MonoBehaviour
         if (plan.Count <= 0)
         {
             state = FSMState.Plan;
+            //if we finished this goal, go to the next one
+            if (curGoal == goals.Count - 1)
+            {
+                curGoal = 0;
+            }
+            else
+            {
+                curGoal++;
+            }
             return false;
         }
 
