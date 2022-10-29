@@ -161,6 +161,7 @@ public class Agent : MonoBehaviour
         //list to store all plans that achieve curent goal
         List<List<GOAPAction>> curPlans = new List<List<GOAPAction>>();
         List<int> costs = new List<int>();
+        List<string> worldState = GetWorldState();
 
         //loop through plans list and find which ones end with 
         //an effect that accomplishes our goal
@@ -179,11 +180,6 @@ public class Agent : MonoBehaviour
                     //Debug.Log(temp);
                     //track if the initial state matches this actions preconditions
                     bool preconMatch = true;
-                    ////skip this action if preconditions and initial state don't match
-                    //if (temp.preconditions.Count != inventory.Count)
-                    //{
-                    //    continue;
-                    //}
 
                     //check if the initial state matches
                     for (int k = 0; k < temp.preconditions.Count; k++)
@@ -199,6 +195,16 @@ public class Agent : MonoBehaviour
                         {
                             //Debug.Log(inventory[l]);
                             if (precondition == inventory[l])
+                            {
+                                preconMatch = true;
+                                break;
+                            }
+                        }
+                        //also check against world state
+                        for (int l = 0; l < worldState.Count; l++)
+                        {
+                            //Debug.Log(inventory[l]);
+                            if (precondition == worldState[l])
                             {
                                 preconMatch = true;
                                 break;
@@ -296,5 +302,28 @@ public class Agent : MonoBehaviour
         }
 
 
+    }
+
+    /// <summary>
+    /// Get the current world state for things that can't
+    /// be stored in inventory. i.e. is a fire lit
+    /// </summary>
+    /// <returns></returns>
+    private List<string> GetWorldState()
+    {
+        List<string> states = new List<string>();
+
+        //get all campfires and see if one is lit
+        GameObject[] campFires = GameObject.FindGameObjectsWithTag("CampFire");
+        for(int i = 0; i < campFires.Length; i++)
+        {
+            if (campFires[i].GetComponent<CampFire>().OnFire)
+            {
+                states.Add("litFire");
+                break;
+            }
+        }
+
+        return states;
     }
 }

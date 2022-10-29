@@ -64,7 +64,6 @@ public class ACookHotdog : GOAPAction
                 //spin wheels to imitate time to complete action
                 if (agent.startActionTime + time <= curTime)
                 {
-                    agent.target.GetComponent<CampFire>().CreateFire();
                     agent.inventory.Remove("haveColddog");
                     agent.inventory.Add("haveHotdog");
                     agent.startActionTime = -1;
