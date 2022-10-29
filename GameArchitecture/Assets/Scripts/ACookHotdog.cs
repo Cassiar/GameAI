@@ -24,13 +24,12 @@ public class ACookHotdog : GOAPAction
     /// </summary>
     /// <param name="agent"></param>
     /// <exception cref="System.NotImplementedException"></exception>
-    public override bool Run(Agent agent)
+    public override Enums.ActionResult Run(Agent agent)
     {
         //need kindling to make fire
         if (!agent.inventory.Contains("haveColddog"))
         {
-            //action is over because we can't complete it
-            return true;
+            return Enums.ActionResult.Fail;
         }
 
         Vector3 agPos = agent.transform.position;
@@ -39,18 +38,18 @@ public class ACookHotdog : GOAPAction
         //then we check the distance, to see if we can make fire or need to move
         if (agent.target != null && agent.target.tag == "CampFire")
         {
-            //retarget agent if curent target is on fire
-            if (agent.target.GetComponent<CampFire>().OnFire)
+            //retarget agent if curent target fire went out
+            if (!agent.target.GetComponent<CampFire>().OnFire)
             {
                 closest = GetClosest(agPos);
                 if (closest == null)
                 {
-                    return true;
+                    return Enums.ActionResult.Fail;
                 }
                 else
                 {
                     agent.target = closest;
-                    return false;
+                    return Enums.ActionResult.Wait;
                 }
             }
             if (Vector3.Distance(agPos, agent.target.transform.position) <= 1)
@@ -67,16 +66,16 @@ public class ACookHotdog : GOAPAction
                     agent.inventory.Remove("haveColddog");
                     agent.inventory.Add("haveHotdog");
                     agent.startActionTime = -1;
-                    return true;
+                    return Enums.ActionResult.Success;
                 }
                 else
                 {
-                    return false;
+                    return Enums.ActionResult.Wait;
                 }
             }
             else
             {
-                return false;
+                return Enums.ActionResult.Wait;
             }
         }
 
@@ -84,13 +83,11 @@ public class ACookHotdog : GOAPAction
         closest = GetClosest(agPos);
         if (closest == null)
         {
-            return true;
+            return Enums.ActionResult.Fail;
         }
         //return false because the action isn't over
         agent.target = closest;
-        return false;
-
-
+        return Enums.ActionResult.Wait;
     }
 
     private GameObject GetClosest(Vector3 agPos)
@@ -101,8 +98,8 @@ public class ACookHotdog : GOAPAction
         GameObject[] campFires = GameObject.FindGameObjectsWithTag("CampFire");
         for (int i = 0; i < campFires.Length; i++)
         {
-            //only check if the campfire isn't lit
-            if (!campFires[i].GetComponent<CampFire>().OnFire)
+            //only check if the campfire is lit
+            if (campFires[i].GetComponent<CampFire>().OnFire)
             {
                 float dist = Vector3.Distance(agPos, campFires[i].transform.position);
                 if (dist < closetDist)

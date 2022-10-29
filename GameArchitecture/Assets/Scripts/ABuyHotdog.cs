@@ -20,8 +20,12 @@ public class ABuyHotdog : GOAPAction
     /// </summary>
     /// <param name="agent"></param>
     /// <exception cref="System.NotImplementedException"></exception>
-    public override bool Run(Agent agent)
+    public override Enums.ActionResult Run(Agent agent)
     {
+        if (!agent.inventory.Contains("haveWallet"))
+        {
+            return Enums.ActionResult.Fail;
+        }
         Vector3 agPos = agent.transform.position;
         //if the agent is already targeted toward a forest
         //then we check the distance, to see if we can collect or need to move
@@ -32,11 +36,11 @@ public class ABuyHotdog : GOAPAction
                 agent.inventory.Add("haveHotdog");
                 agent.inventory.Remove("haveWallet");
                 agent.inventory.Add("noWallet");
-                return true;
+                return Enums.ActionResult.Success;
             }
             else
             {
-                return false;
+                return Enums.ActionResult.Wait;
             }
         }
 
@@ -57,7 +61,6 @@ public class ABuyHotdog : GOAPAction
 
         //return false because the action isn't over
         agent.target = forests[closestIndex];
-        return false;
-
+        return Enums.ActionResult.Wait;
     }
 }

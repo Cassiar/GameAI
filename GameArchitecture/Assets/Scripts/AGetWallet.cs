@@ -20,7 +20,7 @@ public class AGetWallet : GOAPAction
     /// </summary>
     /// <param name="agent"></param>
     /// <exception cref="System.NotImplementedException"></exception>
-    public override bool Run(Agent agent)
+    public override Enums.ActionResult Run(Agent agent)
     {
         Vector3 agPos = agent.transform.position;
         //if the agent is already targeted toward a forest
@@ -31,11 +31,11 @@ public class AGetWallet : GOAPAction
             {
                 agent.inventory.Add("haveWallet");
                 agent.inventory.Remove("noWallet");
-                return true;
+                return Enums.ActionResult.Success;
             }
             else
             {
-                return false;
+                return Enums.ActionResult.Wait;
             }
         }
 
@@ -56,7 +56,7 @@ public class AGetWallet : GOAPAction
 
         //return false because the action isn't over
         agent.target = backpacks[closestIndex];
-        return false;
+        return Enums.ActionResult.Wait;
 
     }
 }

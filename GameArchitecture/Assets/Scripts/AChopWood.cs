@@ -22,8 +22,12 @@ public class AChopWood : GOAPAction
     /// </summary>
     /// <param name="agent"></param>
     /// <exception cref="System.NotImplementedException"></exception>
-    public override bool Run(Agent agent)
+    public override Enums.ActionResult Run(Agent agent)
     {
+        if (!agent.inventory.Contains("haveAx"))
+        {
+            return Enums.ActionResult.Fail;
+        }
         Vector3 agPos = agent.transform.position;
         //if the agent is already targeted toward a forest
         //then we check the distance, to see if we can collect or need to move
@@ -43,16 +47,16 @@ public class AChopWood : GOAPAction
                     agent.inventory.Add("haveKindling");
                     agent.inventory.Remove("noKindling");
                     agent.startActionTime = -1;
-                    return true;
+                    return Enums.ActionResult.Success;
                 }
                 else
                 {
-                    return false;
+                    return Enums.ActionResult.Wait;
                 }
             }
             else
             {
-                return false;
+                return Enums.ActionResult.Wait;
             }
         }
 
@@ -73,7 +77,7 @@ public class AChopWood : GOAPAction
 
         //return false because the action isn't over
         agent.target = forests[closestIndex];
-        return false;
+        return Enums.ActionResult.Wait;
 
     }
 }

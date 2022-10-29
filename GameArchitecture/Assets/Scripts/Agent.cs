@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using static Enums;
@@ -28,6 +29,12 @@ public class Agent : MonoBehaviour
     [SerializeField]
     public List<string> inventory = new List<string>();
 
+
+    //list to store all plans that achieve curent goal
+    List<List<GOAPAction>> curPlans = new List<List<GOAPAction>>();
+    List<int> costs = new List<int>();
+    int planIndex = -1;
+    private List<List<GOAPAction>> plans = new List<List<GOAPAction>>();
     private List<GOAPAction> plan = new List<GOAPAction>();
 
     //keep list of list of actions so we can 
@@ -157,11 +164,11 @@ public class Agent : MonoBehaviour
     /// <returns>Returns true when the planning is finished</returns>
     protected bool Planning()
     {
-
-        //list to store all plans that achieve curent goal
-        List<List<GOAPAction>> curPlans = new List<List<GOAPAction>>();
-        List<int> costs = new List<int>();
         List<string> worldState = GetWorldState();
+        //clear curent plans and costs
+        curPlans.Clear();
+        costs.Clear();
+        plans.Clear();
 
         //loop through plans list and find which ones end with 
         //an effect that accomplishes our goal
@@ -236,7 +243,7 @@ public class Agent : MonoBehaviour
         }
 
         int cheapestPlan = int.MaxValue;
-        int planIndex = -1;
+        planIndex = -1;
         //find the cheapest plan out of all plans
         //and store the index of that one
         for (int i = 0; i < curPlans.Count; i++)
@@ -253,13 +260,17 @@ public class Agent : MonoBehaviour
         {
             return false;
         }
-        
+
         //copy list of actions into plan
-        for(int i = 0; i < curPlans[planIndex].Count; i++)
+        for (int i = 0; i < curPlans.Count; i++)
         {
-            plan.Add(curPlans[planIndex][i]);
+            plans.Add(new List<GOAPAction>());
+            for (int j = 0; j < curPlans[i].Count; j++)
+            {
+                plans[i].Add(curPlans[i][j]);
+            }
         }
-        //curPlans[planIndex].CopyTo(plan);
+        //plan = curPlans[planIndex].ToList();
 
         return true;
     }
@@ -270,8 +281,13 @@ public class Agent : MonoBehaviour
     /// <returns>Returns true when the action has been compleated</returns>
     protected bool Act()
     {
+        //exit if no more backup plans
+        if(planIndex < 0)
+        {
+            state = FSMState.Plan;
+        }
         //if we're out of actions go back to the planning stage
-        if (plan.Count <= 0)
+        if (plans[planIndex].Count <= 0)
         {
             state = FSMState.Plan;
             //if we finished this goal, go to the next one
@@ -287,14 +303,35 @@ public class Agent : MonoBehaviour
         }
 
         //get the first action
-        GOAPAction action = plan[0];
+        GOAPAction action = plans[planIndex][0];
 
+        ActionResult result = action.Run(this);
         //pass the agent into the run action
-        if (action.Run(this))
+        if (result == ActionResult.Success)
         {
             //remove this action from the list
-            plan.RemoveAt(0);
+            plans[planIndex].RemoveAt(0);
             return true;
+        }
+        else if (result == ActionResult.Fail)
+        {
+            //plans[planIndex].Clear();
+            plans.RemoveAt(planIndex);
+            costs.RemoveAt(planIndex);
+            //find next cheapest plan
+            int cheapestPlan = int.MaxValue;
+            planIndex = -1;
+            //find the cheapest plan out of all plans
+            //and store the index of that one
+            for (int i = 0; i < plans.Count; i++)
+            {
+                if (costs[i] < cheapestPlan)
+                {
+                    cheapestPlan = costs[i];
+                    planIndex = i;
+                }
+            }            
+            return false;
         }
         else
         {

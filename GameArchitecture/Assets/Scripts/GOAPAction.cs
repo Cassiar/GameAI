@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static Enums;
 
 public abstract class GOAPAction : MonoBehaviour
 {
@@ -79,5 +80,5 @@ public abstract class GOAPAction : MonoBehaviour
     /// <summary>
     /// Run the action on the game agent
     /// </summary>
-    public abstract bool Run(Agent agent);
+    public abstract ActionResult Run(Agent agent);
 }

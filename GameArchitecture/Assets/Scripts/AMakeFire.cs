@@ -24,13 +24,13 @@ public class AMakeFire : GOAPAction
     /// </summary>
     /// <param name="agent"></param>
     /// <exception cref="System.NotImplementedException"></exception>
-    public override bool Run(Agent agent)
+    public override Enums.ActionResult Run(Agent agent)
     {
         //need kindling to make fire
         if (!agent.inventory.Contains("haveKindling"))
         {
             //action is over because we can't complete it
-            return true;
+            return Enums.ActionResult.Fail;
         }
 
         Vector3 agPos = agent.transform.position;
@@ -45,12 +45,12 @@ public class AMakeFire : GOAPAction
                 closest = GetClosest(agPos);
                 if(closest == null)
                 {
-                    return true;
+                    return Enums.ActionResult.Fail;
                 }
                 else
                 {
                     agent.target = closest;
-                    return false;
+                    return Enums.ActionResult.Wait;
                 }
             }
             if (Vector3.Distance(agPos, agent.target.transform.position) <= 1)
@@ -68,16 +68,16 @@ public class AMakeFire : GOAPAction
                     agent.inventory.Remove("haveKindling");
                     agent.inventory.Add("noKindling");
                     agent.startActionTime = -1;
-                    return true;
+                    return Enums.ActionResult.Success;
                 }
                 else
                 {
-                    return false;
+                    return Enums.ActionResult.Wait;
                 }
             }
             else
             {
-                return false;
+                return Enums.ActionResult.Wait;
             }
         }
 
@@ -85,13 +85,11 @@ public class AMakeFire : GOAPAction
         closest = GetClosest(agPos);
         if(closest == null)
         {
-            return true;
+            return Enums.ActionResult.Fail;
         }
         //return false because the action isn't over
         agent.target = closest;
-        return false;
-
-
+        return Enums.ActionResult.Wait;
     }
 
     private GameObject GetClosest(Vector3 agPos)
