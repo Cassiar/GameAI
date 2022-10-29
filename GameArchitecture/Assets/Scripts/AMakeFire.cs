@@ -33,14 +33,30 @@ public class AMakeFire : GOAPAction
         }
 
         Vector3 agPos = agent.transform.position;
+        GameObject closest;
         //if the agent is already targeted toward a camp fire
         //then we check the distance, to see if we can make fire or need to move
         if (agent.target != null && agent.target.tag == "CampFire")
         {
+            //retarget agent if curent target is on fire
+            if (agent.target.GetComponent<CampFire>().OnFire)
+            {
+                closest = GetClosest(agPos);
+                if(closest == null)
+                {
+                    return true;
+                }
+                else
+                {
+                    agent.target = closest;
+                    return false;
+                }
+            }
             if (Vector3.Distance(agPos, agent.target.transform.position) <= 1)
             {
                 agent.target.GetComponent<CampFire>().CreateFire();
                 agent.inventory.Remove("haveKindling");
+                agent.inventory.Add("noKindling");
                 return true;
             }
             else
@@ -49,6 +65,21 @@ public class AMakeFire : GOAPAction
             }
         }
 
+
+        closest = GetClosest(agPos);
+        if(closest == null)
+        {
+            return true;
+        }
+        //return false because the action isn't over
+        agent.target = closest;
+        return false;
+
+
+    }
+
+    private GameObject GetClosest(Vector3 agPos)
+    {
         float closetDist = int.MaxValue;
         int closestIndex = -1;
         //get all instances of kindling piles
@@ -71,13 +102,8 @@ public class AMakeFire : GOAPAction
         //so this action is complete
         if (closestIndex == -1)
         {
-            return true;
+            return null;
         }
-
-        //return false because the action isn't over
-        agent.target = campFires[closestIndex];
-        return false;
-
-
+        return campFires[closestIndex];
     }
 }

@@ -30,7 +30,8 @@ public class AChopWood : GOAPAction
         {
             if (Vector3.Distance(agPos, agent.target.transform.position) <= 1)
             {
-                agent.inventory.Add("haveKindling");
+                agent.inventory.Add("haveKindling"); 
+                agent.inventory.Remove("noKindling");
                 return true;
             }
             else
