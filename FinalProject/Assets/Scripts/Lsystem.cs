@@ -44,8 +44,8 @@ public class Lsystem : MonoBehaviour
     {
         //create rules
         rules.Add('|', "||#[+|][-|]");
-        //rules.Add('#', "#[[+#]-#]");
-        //rules.Add('#', "#[[+#]-#]#[[+#]-#]#[[+#]-#]");
+        //rules.Add('#', "#[+#][-#]"); //make each room three wide
+        rules.Add('#', "#[[+#]-#]#[[[+#]-#]#[[+#]-#]]"); //make room 3x3 and set out halls to center
         //loop for each iteration
         for (int i = 0; i < numIterations; i++)
         {
