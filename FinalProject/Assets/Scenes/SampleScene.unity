@@ -330,11 +330,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b3d1995386cdf248b9d3003b84f8e83, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  numIterations: 1
-  buffer: 7c00
+  numIterations: 3
+  buffer: 7c002300
   terrain:
   - {fileID: 5557836435614706676, guid: 49465ec425373274c8d4d363c28bdce0, type: 3}
   - {fileID: 8541580042666787336, guid: 5940cb24f551e5d41a824ae726b71d1b, type: 3}
+  obstacles:
+  - {fileID: 90933498648287873, guid: f4dcf12eb69fb394b95efbe23372fbc9, type: 3}
+  - {fileID: 1356528609170857745, guid: d1a14d71dd1623b45b35f5d90f148681, type: 3}
+  - {fileID: 2213274034809557721, guid: bbe00853c0b1f914693f4061b0204bbc, type: 3}
+  - {fileID: 8449037624481019849, guid: d59871ab6f4bb3b4aa4064faeb3d2a85, type: 3}
+  - {fileID: 4108496029337251633, guid: 47a1cb1c43a92704f904b065580a590d, type: 3}
+  - {fileID: 8016882022769655725, guid: 6679ff008f681e644a07be0a77f99da8, type: 3}
+  - {fileID: 7821277658644514404, guid: 7021ba8e738de7e4b9daad73b46bbcae, type: 3}
 --- !u!4 &2114016925
 Transform:
   m_ObjectHideFlags: 0
