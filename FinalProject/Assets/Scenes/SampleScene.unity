@@ -330,7 +330,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b3d1995386cdf248b9d3003b84f8e83, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  numIterations: 3
+  numIterations: 1
   buffer: 7c00
   terrain:
   - {fileID: 5557836435614706676, guid: 49465ec425373274c8d4d363c28bdce0, type: 3}

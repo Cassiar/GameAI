@@ -38,14 +38,23 @@ public class Lsystem : MonoBehaviour
     //list of objects that will be instantiated
     [SerializeField]
     private List<GameObject> terrain = new List<GameObject>();
+    [SerializeField]
+    private List<GameObject> obstacles = new List<GameObject>();
 
     // Start is called before the first frame update
     void Start()
     {
+        //these two make a really interesting snowflake dungeon,
+        //but there are a huge amount of overlaps
+        //rules.Add('|', "|#[+|][-|]|");
+        //rules.Add('#', "[[[+#]-#]#[[+#]-#]]");
+        
+        
         //create rules
-        rules.Add('|', "||#[+|][-|]");
-        //rules.Add('#', "#[+#][-#]"); //make each room three wide
-        rules.Add('#', "#[[+#]-#]#[[[+#]-#]#[[+#]-#]]"); //make room 3x3 and set out halls to center
+        //rooms overlap, but halls don't overlap rooms
+        rules.Add('|', "|#[+|][-|]|");
+        rules.Add('#', "#[[+#]-#]#"); //make each room three wide
+        //rules.Add('#', "#[[+#]-#]#[[[+#]-#]#[[+#]-#]]"); //make room 3x3 and set out halls to center
         //loop for each iteration
         for (int i = 0; i < numIterations; i++)
         {
@@ -123,6 +132,17 @@ public class Lsystem : MonoBehaviour
                     prevLengths.Push(prevLength);
                     break;
                 case ']':
+                    //if the previous dugneon piece was a hall
+                    //then we're at the end of the hallway so
+                    //we should spawn some sort of obstacle
+                    if (buffer[i - 1] == '|')
+                    {
+                        //get random obstacle
+                        int rand = Random.Range(0, obstacles.Count);
+                        //need to move up since orgin is in center of model
+                        pos += Quaternion.Euler(rot) * new Vector3(length, obstacles[rand].transform.position.y / 2, 0);
+                        Instantiate(obstacles[rand], pos, Quaternion.Euler(rot));
+                    }
                     pos = positions.Pop();
                     rot = rotations.Pop();
                     prevLength = prevLengths.Pop();
