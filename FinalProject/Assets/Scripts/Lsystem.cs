@@ -44,6 +44,9 @@ public class Lsystem : MonoBehaviour
     [SerializeField]
     private List<GameObject> obstacles = new List<GameObject>();
 
+    float prevLength = 0;
+    float length = 0;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -104,38 +107,16 @@ public class Lsystem : MonoBehaviour
 
         Debug.Log(test);
 
-        float prevLength = 0;
-        float length = 0;
         //draw the objects
         for(int i = 0; i < buffer.Count; i++)
         {
             switch (buffer[i])
             {
                 case '|':
-                    //move forward equal to half the length of the previous object
-                    //since origin is in center of model
-                    //multiplying by rotation to face correct direction
-                    pos += Quaternion.Euler(rot) * new Vector3(prevLength, 0, 0);
-                    //update length to be for this object
-                    length = terrain[0].transform.localScale.x / 2;
-                    //then move forward half again so we're half dist
-                    //away from end of previous
-                    pos += Quaternion.Euler(rot) * new Vector3(length, 0, 0);
-                    Instantiate(terrain[0], pos, Quaternion.Euler(rot));
-                    prevLength = length;
+                    CreateObject(terrain[0]);
                     break;
-                case '#':                    
-                    //move forward equal to half the length of the previous object
-                    //since origin is in center of model
-                    //multiplying by rotation to face correct direction
-                    pos += Quaternion.Euler(rot) * new Vector3(prevLength, 0, 0);
-                    //update length to be for this object
-                    length = terrain[1].transform.localScale.x / 2;
-                    //then move forward half again so we're half dist
-                    //away from end of previous
-                    pos += Quaternion.Euler(rot) * new Vector3(length, 0, 0);
-                    Instantiate(terrain[1], pos, Quaternion.Euler(rot));
-                    prevLength = length;
+                case '#':
+                    CreateObject(terrain[1]);
                     break;
                 case '[':
                     positions.Push(pos);
@@ -172,5 +153,37 @@ public class Lsystem : MonoBehaviour
     void Update()
     {
 
+    }
+
+    /// <summary>
+    /// Spawn a gameobject at the current position
+    /// </summary>
+    /// <param name="terrain"></param>
+    private void CreateObject(GameObject terrain)
+    {
+        //move forward equal to half the length of the previous object
+        //since origin is in center of model
+        //multiplying by rotation to face correct direction
+        pos += Quaternion.Euler(rot) * new Vector3(prevLength, 0, 0);
+        //update length to be for this object
+        length = terrain.transform.localScale.x / 2;
+        //then move forward half again so we're half dist
+        //away from end of previous
+        pos += Quaternion.Euler(rot) * new Vector3(length, 0, 0);
+        GameObject obj = Instantiate(terrain, pos, Quaternion.Euler(rot));
+        prevLength = length;
+        TerrainObj tObj = obj.GetComponent<TerrainObj>();
+        //tObj.collided.
+        tObj.collided.AddListener(MoveUp);
+    }
+
+    /// <summary>
+    /// Move the object up by the y height
+    /// of a hall or room
+    /// </summary>
+    public void MoveUp()
+    {
+        pos.y += terrain[0].transform.localScale.y;
+        Debug.Log(pos.y);
     }
 }
