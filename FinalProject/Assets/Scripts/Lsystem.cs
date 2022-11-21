@@ -12,9 +12,12 @@ public class Lsystem : MonoBehaviour
     // - - subtraction 90 from rotation
     // | - draw path
     // # - draw a room
+    //map the symbol to how many rules it can turn into
+    private Dictionary<char, int> ruleNums = new Dictionary<char, int>();
     //map different characters to what rules they're replaced wit
-    [SerializeField]
-    private Dictionary<char, string> rules = new Dictionary<char, string>();
+    //uses a string as key so we can map multiple rules to the same
+    //key
+    private Dictionary<string, string> rules = new Dictionary<string, string>();
 
     //how many times to iterate and apply rules
     [SerializeField]
@@ -48,12 +51,17 @@ public class Lsystem : MonoBehaviour
         //but there are a huge amount of overlaps
         //rules.Add('|', "|#[+|][-|]|");
         //rules.Add('#', "[[[+#]-#]#[[+#]-#]]");
-        
-        
+
+        ruleNums.Add('|', 5);
+        ruleNums.Add('#', 1);
         //create rules
         //rooms overlap, but halls don't overlap rooms
-        rules.Add('|', "|#[+|][-|]|");
-        rules.Add('#', "#[[+#]-#]#"); //make each room three wide
+        rules.Add("|0", "|#[+|][-|]|");//hall splits into three directions
+        rules.Add("|1", "|#[+|][-|]");//hall only turns left and right
+        rules.Add("|2", "|#|");//hall only goes straight
+        rules.Add("|3", "|#[+|]");//turn 90 positive
+        rules.Add("|4", "|#[-|]"); //turn -90
+        rules.Add("#0", "#[[+#]-#]#"); //make each room three wide
         //rules.Add('#', "#[[+#]-#]#[[[+#]-#]#[[+#]-#]]"); //make room 3x3 and set out halls to center
         //loop for each iteration
         for (int i = 0; i < numIterations; i++)
@@ -62,10 +70,13 @@ public class Lsystem : MonoBehaviour
             for (int j = 0; j < buffer.Count; j++)
             {
                 char c = buffer[j];
-                if (rules.ContainsKey(c))
+                if (ruleNums.ContainsKey(c))
                 {
+                    int num = ruleNums[c];
+                    //generate a random rule to propogate
+                    string randRule = c + Random.Range(0, num).ToString();
                     //get the rule from the dictionary
-                    string rule = rules[c];
+                    string rule = rules[randRule];
                     //add each new char to next string
                     for (int k = 0; k < rule.Length; k++)
                     {
