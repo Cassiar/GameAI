@@ -170,11 +170,14 @@ public class Lsystem : MonoBehaviour
         //then move forward half again so we're half dist
         //away from end of previous
         pos += Quaternion.Euler(rot) * new Vector3(length, 0, 0);
-        GameObject obj = Instantiate(terrain, pos, Quaternion.Euler(rot));
         prevLength = length;
-        TerrainObj tObj = obj.GetComponent<TerrainObj>();
-        //tObj.collided.
-        tObj.collided.AddListener(MoveUp);
+        //send raycast to current location
+        //if it hits something then we move the pos up by the terrain y height
+        if (Physics.Raycast(new Vector3(pos.x, pos.y + 10, pos.z), new Vector3(0, -1, 0)))
+        {
+            pos.y += terrain.transform.localScale.y;
+        }
+        GameObject obj = Instantiate(terrain, pos, Quaternion.Euler(rot));
     }
 
     /// <summary>
@@ -183,7 +186,7 @@ public class Lsystem : MonoBehaviour
     /// </summary>
     public void MoveUp()
     {
-        pos.y += terrain[0].transform.localScale.y;
+        pos.y += terrain[1].transform.localScale.y;
         Debug.Log(pos.y);
     }
 }

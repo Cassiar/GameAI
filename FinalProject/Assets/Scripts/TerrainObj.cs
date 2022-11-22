@@ -6,6 +6,7 @@ using UnityEngine.Events;
 public class TerrainObj : MonoBehaviour
 {
     public UnityEvent collided;
+    public bool isColliding = false;
 
     private void Start()
     {
@@ -16,8 +17,10 @@ public class TerrainObj : MonoBehaviour
     /// knows to move up the yheight
     /// </summary>
     /// <param name="collision"></param>
-    private void OnCollisionEnter(UnityEngine.Collision collision)
+    void OnCollisionEnter(Collision collision)
     {
+        Debug.Log("CollisionEnter");
         collided.Invoke();
+        isColliding= true;
     }
 }
