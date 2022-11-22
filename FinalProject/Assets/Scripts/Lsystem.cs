@@ -171,11 +171,15 @@ public class Lsystem : MonoBehaviour
         //away from end of previous
         pos += Quaternion.Euler(rot) * new Vector3(length, 0, 0);
         prevLength = length;
+        RaycastHit hit; 
         //send raycast to current location
         //if it hits something then we move the pos up by the terrain y height
-        if (Physics.Raycast(new Vector3(pos.x, pos.y + 10, pos.z), new Vector3(0, -1, 0)))
+        if (Physics.Raycast(new Vector3(pos.x, pos.y + 10, pos.z), new Vector3(0, -1, 0), out hit))
         {
-            pos.y += terrain.transform.localScale.y;
+            if (hit.transform.position.y == pos.y)
+            {
+                pos.y += terrain.transform.localScale.y;
+            }
         }
         GameObject obj = Instantiate(terrain, pos, Quaternion.Euler(rot));
     }
