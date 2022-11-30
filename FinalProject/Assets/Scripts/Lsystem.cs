@@ -14,6 +14,7 @@ public class Lsystem : MonoBehaviour
     // # - draw a room
     // . - draw a corner, square with size of hall width
     // * - draw a ladder, should increase 'height' of dungeon
+    // @ - draw a ladder, decreases 'height' of dungeon
     //map the symbol to how many rules it can turn into
     private Dictionary<char, int> ruleNums = new Dictionary<char, int>();
     //map different characters to what rules they're replaced wit
@@ -36,6 +37,7 @@ public class Lsystem : MonoBehaviour
     private Stack<Vector3> positions = new Stack<Vector3>();
     private Stack<Vector3> rotations = new Stack<Vector3>();
     private Stack<float> prevLengths = new Stack<float>();
+    private Stack<float> prevHeights = new Stack<float>();
 
     private Vector3 pos = new Vector3(0, 0, 0);
     private Vector3 rot = new Vector3(0, 0, 0);
@@ -60,7 +62,7 @@ public class Lsystem : MonoBehaviour
         //rules.Add('#', "[[[+#]-#]#[[+#]-#]]");
 
         ruleNums.Add('|', 7);
-        ruleNums.Add('#', 2);
+        ruleNums.Add('#', 4);
         //create rules
         //rooms overlap, but halls don't overlap rooms
         rules.Add("|0", "|#[+|][-|]|");//hall splits into three directions
@@ -70,8 +72,11 @@ public class Lsystem : MonoBehaviour
         rules.Add("|4", "|#[-|]"); //turn -90 with room
         rules.Add("|5", "|.[+|]");//turn 90 positive with corner
         rules.Add("|6", "|.[-|]"); //turn -90 with corner
+
         rules.Add("#0", "#[[+#]-#]#"); //make each room three wide
         rules.Add("#1", "#*#"); //make a room then a ladder and another room
+        rules.Add("#2", "###");//make room longer
+        rules.Add("#3", "#@#");//ladder but going down
         //rules.Add('#', "#[[+#]-#]#[[[+#]-#]#[[+#]-#]]"); //make room 3x3 and set out halls to center
         //loop for each iteration
         for (int i = 0; i < numIterations; i++)
@@ -123,7 +128,15 @@ public class Lsystem : MonoBehaviour
                     CreateObject(terrain[0]);
                     break;
                 case '#': //room
-                    CreateObject(terrain[1]);
+                    if (buffer[i - 1] == '@')
+                    {
+
+                        CreateObject(terrain[1], -1);
+                    }
+                    else
+                    {
+                        CreateObject(terrain[1]);
+                    }
                     break;
                 case '.': //corner
                     CreateObject(terrain[2]);
@@ -131,10 +144,14 @@ public class Lsystem : MonoBehaviour
                 case '*': //ladder
                     CreateObject(terrain[3]);
                     break;
+                case '@': //ladder going down
+                    CreateObject(terrain[3], -1);
+                    break;
                 case '[':
                     positions.Push(pos);
                     rotations.Push(rot);
                     prevLengths.Push(prevLength);
+                    prevHeights.Push(prevHeight);
                     break;
                 case ']':
                     //if the previous dugneon piece was a hall
@@ -151,6 +168,7 @@ public class Lsystem : MonoBehaviour
                     pos = positions.Pop();
                     rot = rotations.Pop();
                     prevLength = prevLengths.Pop();
+                    prevHeight = prevHeights.Pop();
                     break;
                 case '+':
                     rot.y += 90;
@@ -169,10 +187,21 @@ public class Lsystem : MonoBehaviour
     }
 
     /// <summary>
-    /// Spawn a gameobject at the current position
+    /// Calls the CreateObject method but with
+    /// dungeon alwasy going up
     /// </summary>
     /// <param name="terrain"></param>
     private void CreateObject(GameObject terrain)
+    {
+        CreateObject(terrain, 1);
+    }
+
+    /// <summary>
+    /// Spawn a gameobject at the current position
+    /// </summary>
+    /// <param name="terrain">The object to draw</param>
+    /// <param name="up">1 if the dungeon should move up, -1 if it should move down</param>
+    private void CreateObject(GameObject terrain, short up)
     {        
         //figure out if there's a different y height between objects
         //then update y by the difference
@@ -182,7 +211,7 @@ public class Lsystem : MonoBehaviour
         //move forward equal to half the length of the previous object
         //since origin is in center of model
         //multiplying by rotation to face correct direction
-        pos += Quaternion.Euler(rot) * new Vector3(prevLength, hdiff, 0);
+        pos += Quaternion.Euler(rot) * new Vector3(prevLength, up * hdiff, 0);
         //update length to be for this object
         length = terrain.transform.localScale.x / 2;
         //then move forward half again so we're half dist
