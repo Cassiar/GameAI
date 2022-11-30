@@ -171,10 +171,10 @@ public class Lsystem : MonoBehaviour
                     prevHeight = prevHeights.Pop();
                     break;
                 case '+':
-                    rot.y += 90;
+                    rot.y += 90;// + Random.Range(-5.0f, 5.0f);
                     break;
                 case '-':
-                    rot.y -= 90;
+                    rot.y -= 90;// + Random.Range(-5.0f, 5.0f);
                     break;
             }
         }
