@@ -13,6 +13,7 @@ public class Lsystem : MonoBehaviour
     // | - draw path
     // # - draw a room
     // . - draw a corner, square with size of hall width
+    // * - draw a ladder, should increase 'height' of dungeon
     //map the symbol to how many rules it can turn into
     private Dictionary<char, int> ruleNums = new Dictionary<char, int>();
     //map different characters to what rules they're replaced wit
@@ -59,7 +60,7 @@ public class Lsystem : MonoBehaviour
         //rules.Add('#', "[[[+#]-#]#[[+#]-#]]");
 
         ruleNums.Add('|', 7);
-        ruleNums.Add('#', 1);
+        ruleNums.Add('#', 2);
         //create rules
         //rooms overlap, but halls don't overlap rooms
         rules.Add("|0", "|#[+|][-|]|");//hall splits into three directions
@@ -70,6 +71,7 @@ public class Lsystem : MonoBehaviour
         rules.Add("|5", "|.[+|]");//turn 90 positive with corner
         rules.Add("|6", "|.[-|]"); //turn -90 with corner
         rules.Add("#0", "#[[+#]-#]#"); //make each room three wide
+        rules.Add("#1", "#*#"); //make a room then a ladder and another room
         //rules.Add('#', "#[[+#]-#]#[[[+#]-#]#[[+#]-#]]"); //make room 3x3 and set out halls to center
         //loop for each iteration
         for (int i = 0; i < numIterations; i++)
@@ -125,6 +127,9 @@ public class Lsystem : MonoBehaviour
                     break;
                 case '.': //corner
                     CreateObject(terrain[2]);
+                    break;
+                case '*': //ladder
+                    CreateObject(terrain[3]);
                     break;
                 case '[':
                     positions.Push(pos);
