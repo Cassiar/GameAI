@@ -12,6 +12,7 @@ public class Lsystem : MonoBehaviour
     // - - subtraction 90 from rotation
     // | - draw path
     // # - draw a room
+    // . - draw a corner, square with size of hall width
     //map the symbol to how many rules it can turn into
     private Dictionary<char, int> ruleNums = new Dictionary<char, int>();
     //map different characters to what rules they're replaced wit
@@ -46,6 +47,8 @@ public class Lsystem : MonoBehaviour
 
     float prevLength = 0;
     float length = 0;
+    float prevHeight = 0;
+    float height = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -55,15 +58,17 @@ public class Lsystem : MonoBehaviour
         //rules.Add('|', "|#[+|][-|]|");
         //rules.Add('#', "[[[+#]-#]#[[+#]-#]]");
 
-        ruleNums.Add('|', 5);
+        ruleNums.Add('|', 7);
         ruleNums.Add('#', 1);
         //create rules
         //rooms overlap, but halls don't overlap rooms
         rules.Add("|0", "|#[+|][-|]|");//hall splits into three directions
         rules.Add("|1", "|#[+|][-|]");//hall only turns left and right
         rules.Add("|2", "|#|");//hall only goes straight
-        rules.Add("|3", "|#[+|]");//turn 90 positive
-        rules.Add("|4", "|#[-|]"); //turn -90
+        rules.Add("|3", "|#[+|]");//turn 90 positive with room
+        rules.Add("|4", "|#[-|]"); //turn -90 with room
+        rules.Add("|5", "|.[+|]");//turn 90 positive with corner
+        rules.Add("|6", "|.[-|]"); //turn -90 with corner
         rules.Add("#0", "#[[+#]-#]#"); //make each room three wide
         //rules.Add('#', "#[[+#]-#]#[[[+#]-#]#[[+#]-#]]"); //make room 3x3 and set out halls to center
         //loop for each iteration
@@ -112,11 +117,14 @@ public class Lsystem : MonoBehaviour
         {
             switch (buffer[i])
             {
-                case '|':
+                case '|': //hall
                     CreateObject(terrain[0]);
                     break;
-                case '#':
+                case '#': //room
                     CreateObject(terrain[1]);
+                    break;
+                case '.': //corner
+                    CreateObject(terrain[2]);
                     break;
                 case '[':
                     positions.Push(pos);
@@ -160,11 +168,16 @@ public class Lsystem : MonoBehaviour
     /// </summary>
     /// <param name="terrain"></param>
     private void CreateObject(GameObject terrain)
-    {
+    {        
+        //figure out if there's a different y height between objects
+        //then update y by the difference
+        height = terrain.transform.localScale.y / 2;
+        float hdiff = Mathf.Abs(height - prevHeight);
+        prevHeight = height;
         //move forward equal to half the length of the previous object
         //since origin is in center of model
         //multiplying by rotation to face correct direction
-        pos += Quaternion.Euler(rot) * new Vector3(prevLength, 0, 0);
+        pos += Quaternion.Euler(rot) * new Vector3(prevLength, hdiff, 0);
         //update length to be for this object
         length = terrain.transform.localScale.x / 2;
         //then move forward half again so we're half dist
