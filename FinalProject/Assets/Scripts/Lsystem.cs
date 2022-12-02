@@ -1,7 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.TerrainTools;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class Lsystem : MonoBehaviour
 {
@@ -56,6 +58,8 @@ public class Lsystem : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        //init seed, pretty sure it auto does this though
+        Random.InitState(DateTime.Now.Millisecond);
         //these two make a really interesting snowflake dungeon,
         //but there are a huge amount of overlaps
         //rules.Add('|', "|#[+|][-|]|");
