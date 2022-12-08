@@ -81,106 +81,116 @@ public class Lsystem : MonoBehaviour
         rules.Add("#1", "#*#"); //make a room then a ladder and another room
         rules.Add("#2", "###");//make room longer
         rules.Add("#3", "#@#");//ladder but going down
-        //rules.Add('#', "#[[+#]-#]#[[[+#]-#]#[[+#]-#]]"); //make room 3x3 and set out halls to center
-        //loop for each iteration
-        for (int i = 0; i < numIterations; i++)
+                               //rules.Add('#', "#[[+#]-#]#[[[+#]-#]#[[+#]-#]]"); //make room 3x3 and set out halls to center
+
+        IterateSystem();
+
+        //string test = "";
+        ////print the final string for testing
+        //for (int i = 0; i < buffer.Count; i++)
+        //{
+        //    test += buffer[i] + ", ";
+        //}
+
+        //Debug.Log(test);
+
+        DrawObjects();
+
+        //loop through all the rooms and see if 
+        //adjacent spots are rooms or not, then 
+        //draw walls if not adjacent
+        GameObject[] rooms = GameObject.FindGameObjectsWithTag("Room");
+        for(int i = 0; i < rooms.Length; i++)
         {
-            //loop for each run through buffer
-            for (int j = 0; j < buffer.Count; j++)
+            Vector3 pos = rooms[i].transform.position;
+            Vector3 scale = rooms[i].transform.localScale;
+            RaycastHit hit;
+
+            #region PositiveZ
+            //check left positive z
+            //send raycast to slight above current obj
+            //if no room we draw a wall
+            if (!Physics.Raycast(new Vector3(pos.x, pos.y + 10, pos.z + scale.z), new Vector3(0, -1, 0), out hit))
             {
-                char c = buffer[j];
-                if (ruleNums.ContainsKey(c))
+                Instantiate(terrain[5], new Vector3(pos.x, pos.y, pos.z + scale.z/2), Quaternion.Euler(0,90,0));
+            }
+            else
+            {
+                //if it hit a hall, spawn a door way
+                if (hit.collider.gameObject.CompareTag("Hall"))
                 {
-                    int num = ruleNums[c];
-                    //generate a random rule to propogate
-                    string randRule = c + Random.Range(0, num).ToString();
-                    //get the rule from the dictionary
-                    string rule = rules[randRule];
-                    //add each new char to next string
-                    for (int k = 0; k < rule.Length; k++)
-                    {
-                        backBuffer.Add(rule[k]);
-                    }
-                }//if this char doesn't have a rule, add it
-                //to the new string anyways.
-                else
+                    Instantiate(terrain[6], new Vector3(pos.x, pos.y, pos.z + scale.z / 2), Quaternion.Euler(0, 90, 0));
+                }
+                //if it's not at the same y height, spawn a wall
+                else if (hit.transform.position.y != pos.y)
                 {
-                    backBuffer.Add(c);
+                    Instantiate(terrain[5], new Vector3(pos.x, pos.y, pos.z + scale.z / 2), Quaternion.Euler(0, 90, 0));
                 }
             }
-            //update the buffer and clear the 
-            //back buffer for the next iteration
-            buffer = new List<char>(backBuffer);
-            backBuffer.Clear();
-        }
+            #endregion
 
-        string test = "";
-        //print the final string for testing
-        for (int i = 0; i < buffer.Count; i++)
-        {
-            test += buffer[i] + ", ";
-        }
-
-        Debug.Log(test);
-
-        //draw the objects
-        for(int i = 0; i < buffer.Count; i++)
-        {
-            switch (buffer[i])
+            #region NegativeZ
+            if (!Physics.Raycast(new Vector3(pos.x, pos.y + 10, pos.z - scale.z), new Vector3(0, -1, 0), out hit))
             {
-                case '|': //hall
-                    CreateObject(terrain[0]);
-                    break;
-                case '#': //room
-                    if (buffer[i - 1] == '@')
-                    {
-
-                        CreateObject(terrain[1], -1);
-                    }
-                    else
-                    {
-                        CreateObject(terrain[1]);
-                    }
-                    break;
-                case '.': //corner
-                    CreateObject(terrain[2]);
-                    break;
-                case '*': //ladder
-                    CreateObject(terrain[3]);
-                    break;
-                case '@': //ladder going down
-                    CreateObject(terrain[3], -1);
-                    break;
-                case '[':
-                    positions.Push(pos);
-                    rotations.Push(rot);
-                    prevLengths.Push(prevLength);
-                    prevHeights.Push(prevHeight);
-                    break;
-                case ']':
-                    //if the previous dugneon piece was a hall
-                    //then we're at the end of the hallway so
-                    //we should spawn some sort of obstacle
-                    if (buffer[i - 1] == '|')
-                    {
-                        //get random obstacle
-                        int rand = Random.Range(0, obstacles.Count);
-                        //need to move up since orgin is in center of model
-                        pos += Quaternion.Euler(rot) * new Vector3(length, obstacles[rand].transform.position.y / 2, 0);
-                        Instantiate(obstacles[rand], pos, Quaternion.Euler(rot));
-                    }
-                    pos = positions.Pop();
-                    rot = rotations.Pop();
-                    prevLength = prevLengths.Pop();
-                    prevHeight = prevHeights.Pop();
-                    break;
-                case '+':
-                    rot.y += 90;// + Random.Range(-5.0f, 5.0f);
-                    break;
-                case '-':
-                    rot.y -= 90;// + Random.Range(-5.0f, 5.0f);
-                    break;
+                Instantiate(terrain[5], new Vector3(pos.x, pos.y, pos.z - scale.z / 2), Quaternion.Euler(0, 90, 0));
             }
+            else
+            {
+                //if it hit a hall, spawn a door way
+                if (hit.collider.gameObject.CompareTag("Hall"))
+                {
+                    Instantiate(terrain[6], new Vector3(pos.x, pos.y, pos.z - scale.z / 2), Quaternion.Euler(0, 90, 0));
+                }
+                //if it's not at the same y height, spawn a wall
+                else if (hit.transform.position.y != pos.y)
+                {
+                    Instantiate(terrain[5], new Vector3(pos.x, pos.y, pos.z - scale.z / 2), Quaternion.Euler(0, 90, 0));
+                }
+            }
+            #endregion
+
+            //up
+            #region PostiveX
+            if (!Physics.Raycast(new Vector3(pos.x + scale.x, pos.y + 10, pos.z), new Vector3(0, -1, 0), out hit))
+            {
+                Instantiate(terrain[5], new Vector3(pos.x + scale.x / 2, pos.y, pos.z), Quaternion.Euler(0, 0, 0));
+            }
+            else
+            {
+                //if it hit a hall, spawn a door way
+                if (hit.collider.gameObject.CompareTag("Hall"))
+                {
+                    Instantiate(terrain[6], new Vector3(pos.x + scale.x / 2, pos.y, pos.z), Quaternion.Euler(0, 0, 0));
+                }
+                //if it's not at the same y height, spawn a wall
+                else if (hit.transform.position.y != pos.y)
+                {
+                    Instantiate(terrain[5], new Vector3(pos.x + scale.x / 2, pos.y, pos.z), Quaternion.Euler(0, 0, 0));
+                }
+
+            }
+            #endregion
+
+            #region NegativeX
+            if (!Physics.Raycast(new Vector3(pos.x - scale.x, pos.y + 10, pos.z), new Vector3(0, -1, 0), out hit))
+            {
+                Instantiate(terrain[5], new Vector3(pos.x - scale.x / 2, pos.y, pos.z), Quaternion.Euler(0, 0, 0));
+            }
+            else
+            {
+                //if it hit a hall, spawn a door way
+                if (hit.collider.gameObject.CompareTag("Hall"))
+                {
+                    Instantiate(terrain[6], new Vector3(pos.x - scale.x / 2, pos.y, pos.z), Quaternion.Euler(0, 0, 0));
+                }
+                //if it's not at the same y height, spawn a wall
+                else if (hit.transform.position.y != pos.y)
+                {
+                    Instantiate(terrain[5], new Vector3(pos.x - scale.x / 2, pos.y, pos.z), Quaternion.Euler(0, 0, 0));
+                }
+
+            }
+            #endregion
         }
     }
 
@@ -243,5 +253,109 @@ public class Lsystem : MonoBehaviour
     {
         pos.y += terrain[1].transform.localScale.y;
         Debug.Log(pos.y);
+    }
+
+    /// <summary>
+    /// Expand the buffer based on the rules
+    /// </summary>
+    private void IterateSystem()
+    {
+        //loop for each iteration
+        for (int i = 0; i < numIterations; i++)
+        {
+            //loop for each run through buffer
+            for (int j = 0; j < buffer.Count; j++)
+            {
+                char c = buffer[j];
+                if (ruleNums.ContainsKey(c))
+                {
+                    int num = ruleNums[c];
+                    //generate a random rule to propogate
+                    string randRule = c + Random.Range(0, num).ToString();
+                    //get the rule from the dictionary
+                    string rule = rules[randRule];
+                    //add each new char to next string
+                    for (int k = 0; k < rule.Length; k++)
+                    {
+                        backBuffer.Add(rule[k]);
+                    }
+                }//if this char doesn't have a rule, add it
+                //to the new string anyways.
+                else
+                {
+                    backBuffer.Add(c);
+                }
+            }
+            //update the buffer and clear the 
+            //back buffer for the next iteration
+            buffer = new List<char>(backBuffer);
+            backBuffer.Clear();
+        }
+    }
+
+    /// <summary>
+    /// Draw dungeon based on buffer 
+    /// </summary>
+    private void DrawObjects()
+    {
+        //draw the objects
+        for (int i = 0; i < buffer.Count; i++)
+        {
+            switch (buffer[i])
+            {
+                case '|': //hall
+                    CreateObject(terrain[0]);
+                    break;
+                case '#': //room
+                    if (buffer[i - 1] == '@')
+                    {
+
+                        CreateObject(terrain[1], -1);
+                    }
+                    else
+                    {
+                        CreateObject(terrain[1]);
+                    }
+                    break;
+                case '.': //corner
+                    CreateObject(terrain[2]);
+                    break;
+                case '*': //ladder
+                    CreateObject(terrain[3]);
+                    break;
+                case '@': //ladder going down
+                    CreateObject(terrain[3], -1);
+                    break;
+                case '[':
+                    positions.Push(pos);
+                    rotations.Push(rot);
+                    prevLengths.Push(prevLength);
+                    prevHeights.Push(prevHeight);
+                    break;
+                case ']':
+                    //if the previous dugneon piece was a hall
+                    //then we're at the end of the hallway so
+                    //we should spawn some sort of obstacle
+                    if (buffer[i - 1] == '|')
+                    {
+                        //get random obstacle
+                        int rand = Random.Range(0, obstacles.Count);
+                        //need to move up since orgin is in center of model
+                        pos += Quaternion.Euler(rot) * new Vector3(length, obstacles[rand].transform.position.y / 2, 0);
+                        Instantiate(obstacles[rand], pos, Quaternion.Euler(rot));
+                    }
+                    pos = positions.Pop();
+                    rot = rotations.Pop();
+                    prevLength = prevLengths.Pop();
+                    prevHeight = prevHeights.Pop();
+                    break;
+                case '+':
+                    rot.y += 90;// + Random.Range(-5.0f, 5.0f);
+                    break;
+                case '-':
+                    rot.y -= 90;// + Random.Range(-5.0f, 5.0f);
+                    break;
+            }
+        }
     }
 }

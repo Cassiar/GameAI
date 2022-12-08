@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 5350038522583864215}
   m_Layer: 0
   m_Name: Hall
-  m_TagString: Untagged
+  m_TagString: Hall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

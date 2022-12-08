@@ -338,6 +338,8 @@ MonoBehaviour:
   - {fileID: 3430277104884226511, guid: 53bdfd595aaf3c34daa08926daa1070d, type: 3}
   - {fileID: 6902104734704741308, guid: 72310d9d694311648b49e53a4c5c49a2, type: 3}
   - {fileID: 1035955978380737432, guid: b8e6ca0a289d1e94b8e139aa3ac7fe0d, type: 3}
+  - {fileID: 3877500210587470783, guid: 47acfa0716cea8e418ebbcbaff980dd6, type: 3}
+  - {fileID: 6177973305602819174, guid: 876af419ad2c5e2438fe3904ecb9c303, type: 3}
   obstacles:
   - {fileID: 90933498648287873, guid: f4dcf12eb69fb394b95efbe23372fbc9, type: 3}
   - {fileID: 1356528609170857745, guid: d1a14d71dd1623b45b35f5d90f148681, type: 3}
