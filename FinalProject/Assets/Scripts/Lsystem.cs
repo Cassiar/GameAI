@@ -309,19 +309,80 @@ public class Lsystem : MonoBehaviour
                 obj = Instantiate(terrain[5], new Vector3(pos.x, pos.y + scale.y / 2, pos.z + scale.z / 2), Quaternion.Euler(0, 90, 0));
                 obj.transform.localScale = new Vector3(obj.transform.localScale.x, obj.transform.localScale.y, scale.x);
             }
-            //else
-            //{
-            //    //if it's not at the same y height, spawn a wall
-            //    if (hit.transform.position.y + hit.transform.localScale.y / 2 != pos.y + scale.y / 2)
-            //    {
-            //        //create at top of object
-            //        obj = Instantiate(terrain[5], new Vector3(pos.x, pos.y + scale.y / 2, pos.z + scale.z / 2), Quaternion.Euler(0, 90, 0));
-            //        obj.transform.localScale = new Vector3(obj.transform.localScale.x, obj.transform.localScale.y, scale.x);
-            //    }
-            //}
+            else
+            {
+                //if it's not at the same y height, spawn a wall
+                if (hit.transform.position.y + hit.transform.localScale.y / 2 != pos.y + scale.y / 2)
+                {
+                    //create at top of object
+                    obj = Instantiate(terrain[5], new Vector3(pos.x, pos.y + scale.y / 2, pos.z + scale.z / 2), Quaternion.Euler(0, 90, 0));
+                    obj.transform.localScale = new Vector3(obj.transform.localScale.x, obj.transform.localScale.y, scale.x);
+                }
+            }
             #endregion
 
+            #region NegativeZ
+            //check left positive z
+            //send raycast to slight above current obj
+            //if no room we draw a wall
+            if (!Physics.Raycast(new Vector3(pos.x, pos.y + 10, pos.z - scale.z / 2 - 0.1f), new Vector3(0, -1, 0), out hit))
+            {
+                obj = Instantiate(terrain[5], new Vector3(pos.x, pos.y + scale.y / 2, pos.z - scale.z / 2), Quaternion.Euler(0, 90, 0));
+                obj.transform.localScale = new Vector3(obj.transform.localScale.x, obj.transform.localScale.y, scale.x);
+            }
+            else
+            {
+                //if it's not at the same y height, spawn a wall
+                if (hit.transform.position.y + hit.transform.localScale.y / 2 != pos.y + scale.y / 2)
+                {
+                    //create at top of object
+                    obj = Instantiate(terrain[5], new Vector3(pos.x, pos.y + scale.y / 2, pos.z - scale.z / 2), Quaternion.Euler(0, 90, 0));
+                    obj.transform.localScale = new Vector3(obj.transform.localScale.x, obj.transform.localScale.y, scale.x);
+                }
+            }
+            #endregion
 
+            #region PositiveX
+            //check left positive z
+            //send raycast to slight above current obj
+            //if no room we draw a wall
+            if (!Physics.Raycast(new Vector3(pos.x + scale.x / 2 + 0.1f, pos.y + 10, pos.z), new Vector3(0, -1, 0), out hit))
+            {
+                obj = Instantiate(terrain[5], new Vector3(pos.x + scale.x / 2, pos.y + scale.y / 2, pos.z), Quaternion.Euler(0, 0, 0));
+                obj.transform.localScale = new Vector3(obj.transform.localScale.x, obj.transform.localScale.y, scale.x);
+            }
+            else
+            {
+                //if it's not at the same y height, spawn a wall
+                if (hit.transform.position.y + hit.transform.localScale.y / 2 != pos.y + scale.y / 2)
+                {
+                    //create at top of object
+                    obj = Instantiate(terrain[5], new Vector3(pos.x + scale.x / 2, pos.y + scale.y / 2, pos.z), Quaternion.Euler(0, 0, 0));
+                    obj.transform.localScale = new Vector3(obj.transform.localScale.x, obj.transform.localScale.y, scale.x);
+                }
+            }
+            #endregion
+
+            #region NegativeX
+            //check left positive z
+            //send raycast to slight above current obj
+            //if no room we draw a wall
+            if (!Physics.Raycast(new Vector3(pos.x - scale.x / 2 - 0.1f, pos.y + 10, pos.z), new Vector3(0, -1, 0), out hit))
+            {
+                obj = Instantiate(terrain[5], new Vector3(pos.x - scale.x / 2, pos.y + scale.y / 2, pos.z), Quaternion.Euler(0, 0, 0));
+                obj.transform.localScale = new Vector3(obj.transform.localScale.x, obj.transform.localScale.y, scale.x);
+            }
+            else
+            {
+                //if it's not at the same y height, spawn a wall
+                if (hit.transform.position.y + hit.transform.localScale.y / 2 != pos.y + scale.y / 2)
+                {
+                    //create at top of object
+                    obj = Instantiate(terrain[5], new Vector3(pos.x - scale.x / 2, pos.y + scale.y / 2, pos.z), Quaternion.Euler(0, 0, 0));
+                    obj.transform.localScale = new Vector3(obj.transform.localScale.x, obj.transform.localScale.y, scale.x);
+                }
+            }
+            #endregion
         }
     }
 
