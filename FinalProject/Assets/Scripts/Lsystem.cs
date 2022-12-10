@@ -100,7 +100,7 @@ public class Lsystem : MonoBehaviour
         //adjacent spots are rooms or not, then 
         //draw walls if not adjacent
         GameObject[] rooms = GameObject.FindGameObjectsWithTag("Room");
-        for(int i = 0; i < rooms.Length; i++)
+        for (int i = 0; i < rooms.Length; i++)
         {
             Vector3 pos = rooms[i].transform.position;
             Vector3 scale = rooms[i].transform.localScale;
@@ -110,14 +110,14 @@ public class Lsystem : MonoBehaviour
             //check left positive z
             //send raycast to slight above current obj
             //if no room we draw a wall
-            if (!Physics.Raycast(new Vector3(pos.x, pos.y + 10, pos.z + scale.z), new Vector3(0, -1, 0), out hit))
+            if (!Physics.Raycast(new Vector3(pos.x, pos.y + 10, pos.z + scale.z / 2 + 0.1f), new Vector3(0, -1, 0), out hit))
             {
-                Instantiate(terrain[5], new Vector3(pos.x, pos.y, pos.z + scale.z/2), Quaternion.Euler(0,90,0));
+                Instantiate(terrain[5], new Vector3(pos.x, pos.y, pos.z + scale.z / 2), Quaternion.Euler(0, 90, 0));
             }
             else
             {
                 //if it hit a hall, spawn a door way
-                if (hit.collider.gameObject.CompareTag("Hall"))
+                if (hit.collider.gameObject.CompareTag("Hall") || hit.collider.gameObject.CompareTag("Ladder"))
                 {
                     Instantiate(terrain[6], new Vector3(pos.x, pos.y, pos.z + scale.z / 2), Quaternion.Euler(0, 90, 0));
                 }
@@ -130,14 +130,14 @@ public class Lsystem : MonoBehaviour
             #endregion
 
             #region NegativeZ
-            if (!Physics.Raycast(new Vector3(pos.x, pos.y + 10, pos.z - scale.z), new Vector3(0, -1, 0), out hit))
+            if (!Physics.Raycast(new Vector3(pos.x, pos.y + 10, pos.z - scale.z / 2 - 0.1f), new Vector3(0, -1, 0), out hit))
             {
                 Instantiate(terrain[5], new Vector3(pos.x, pos.y, pos.z - scale.z / 2), Quaternion.Euler(0, 90, 0));
             }
             else
             {
                 //if it hit a hall, spawn a door way
-                if (hit.collider.gameObject.CompareTag("Hall"))
+                if (hit.collider.gameObject.CompareTag("Hall") || hit.collider.gameObject.CompareTag("Ladder"))
                 {
                     Instantiate(terrain[6], new Vector3(pos.x, pos.y, pos.z - scale.z / 2), Quaternion.Euler(0, 90, 0));
                 }
@@ -151,14 +151,14 @@ public class Lsystem : MonoBehaviour
 
             //up
             #region PostiveX
-            if (!Physics.Raycast(new Vector3(pos.x + scale.x, pos.y + 10, pos.z), new Vector3(0, -1, 0), out hit))
+            if (!Physics.Raycast(new Vector3(pos.x + scale.x / 2 + 0.1f, pos.y + 10, pos.z), new Vector3(0, -1, 0), out hit))
             {
                 Instantiate(terrain[5], new Vector3(pos.x + scale.x / 2, pos.y, pos.z), Quaternion.Euler(0, 0, 0));
             }
             else
             {
                 //if it hit a hall, spawn a door way
-                if (hit.collider.gameObject.CompareTag("Hall"))
+                if (hit.collider.gameObject.CompareTag("Hall") || hit.collider.gameObject.CompareTag("Ladder"))
                 {
                     Instantiate(terrain[6], new Vector3(pos.x + scale.x / 2, pos.y, pos.z), Quaternion.Euler(0, 0, 0));
                 }
@@ -172,14 +172,14 @@ public class Lsystem : MonoBehaviour
             #endregion
 
             #region NegativeX
-            if (!Physics.Raycast(new Vector3(pos.x - scale.x, pos.y + 10, pos.z), new Vector3(0, -1, 0), out hit))
+            if (!Physics.Raycast(new Vector3(pos.x - scale.x / 2 - 0.1f, pos.y + 10, pos.z), new Vector3(0, -1, 0), out hit))
             {
                 Instantiate(terrain[5], new Vector3(pos.x - scale.x / 2, pos.y, pos.z), Quaternion.Euler(0, 0, 0));
             }
             else
             {
                 //if it hit a hall, spawn a door way
-                if (hit.collider.gameObject.CompareTag("Hall"))
+                if (hit.collider.gameObject.CompareTag("Hall") || hit.collider.gameObject.CompareTag("Ladder"))
                 {
                     Instantiate(terrain[6], new Vector3(pos.x - scale.x / 2, pos.y, pos.z), Quaternion.Euler(0, 0, 0));
                 }
@@ -191,6 +191,137 @@ public class Lsystem : MonoBehaviour
 
             }
             #endregion
+        }
+
+        //do similar thing for halls (also includes corners)
+        GameObject[] halls = GameObject.FindGameObjectsWithTag("Hall");
+        for (int i = 0; i < halls.Length; i++)
+        {
+            Vector3 pos = halls[i].transform.position;
+            Vector3 scale = halls[i].transform.localScale;
+            //Debug.Log(scale.x);
+
+            RaycastHit hit;
+            GameObject obj;
+
+
+            #region PositiveZ
+            //check left positive z
+            //send raycast to slight above current obj
+            //if no room we draw a wall
+            if (!Physics.Raycast(new Vector3(pos.x, pos.y + 10, pos.z + scale.z / 2 + 0.1f), new Vector3(0, -1, 0), out hit))
+            {
+                obj = Instantiate(terrain[5], new Vector3(pos.x, pos.y + scale.y / 2, pos.z + scale.z / 2), Quaternion.Euler(0, 90, 0));
+                obj.transform.localScale = new Vector3(obj.transform.localScale.x, obj.transform.localScale.y, scale.x);
+            }
+            else
+            {
+                //if it's not at the same y height, spawn a wall
+                if (hit.transform.position.y + hit.transform.localScale.y / 2 != pos.y + scale.y / 2)
+                {
+                    //create at top of object
+                    obj = Instantiate(terrain[5], new Vector3(pos.x, pos.y + scale.y / 2, pos.z + scale.z / 2), Quaternion.Euler(0, 90, 0));
+                    obj.transform.localScale = new Vector3(obj.transform.localScale.x, obj.transform.localScale.y, scale.x);
+                }
+            }
+            #endregion
+
+            #region NegativeZ
+            //check left positive z
+            //send raycast to slight above current obj
+            //if no room we draw a wall
+            if (!Physics.Raycast(new Vector3(pos.x, pos.y + 10, pos.z - scale.z / 2 - 0.1f), new Vector3(0, -1, 0), out hit))
+            {
+                obj = Instantiate(terrain[5], new Vector3(pos.x, pos.y + scale.y / 2, pos.z - scale.z / 2), Quaternion.Euler(0, 90, 0));
+                obj.transform.localScale = new Vector3(obj.transform.localScale.x, obj.transform.localScale.y, scale.x);
+            }
+            else
+            {
+                //if it's not at the same y height, spawn a wall
+                if (hit.transform.position.y + hit.transform.localScale.y / 2 != pos.y + scale.y / 2)
+                {
+                    //create at top of object
+                    obj = Instantiate(terrain[5], new Vector3(pos.x, pos.y + scale.y / 2, pos.z - scale.z / 2), Quaternion.Euler(0, 90, 0));
+                    obj.transform.localScale = new Vector3(obj.transform.localScale.x, obj.transform.localScale.y, scale.x);
+                }
+            }
+            #endregion
+
+            #region PositiveX
+            //check left positive z
+            //send raycast to slight above current obj
+            //if no room we draw a wall
+            if (!Physics.Raycast(new Vector3(pos.x + scale.z / 2 + 0.1f, pos.y + 10, pos.z), new Vector3(0, -1, 0), out hit))
+            {
+                obj = Instantiate(terrain[5], new Vector3(pos.x + scale.z / 2 + 0.1f, pos.y + scale.y / 2, pos.z), Quaternion.Euler(0, 0, 0));
+                obj.transform.localScale = new Vector3(obj.transform.localScale.x, obj.transform.localScale.y, scale.x);
+            }
+            else
+            {
+                //if it's not at the same y height, spawn a wall
+                if (hit.transform.position.y + hit.transform.localScale.y / 2 != pos.y + scale.y / 2)
+                {
+                    //create at top of object
+                    obj = Instantiate(terrain[5], new Vector3(pos.x + scale.z / 2 + 0.1f, pos.y + scale.y / 2, pos.z), Quaternion.Euler(0, 0, 0));
+                    obj.transform.localScale = new Vector3(obj.transform.localScale.x, obj.transform.localScale.y, scale.x);
+                }
+            }
+            #endregion
+
+            #region NegativeX
+            //check left positive z
+            //send raycast to slight above current obj
+            //if no room we draw a wall
+            if (!Physics.Raycast(new Vector3(pos.x - scale.z / 2 - 0.1f, pos.y + 10, pos.z), new Vector3(0, -1, 0), out hit))
+            {
+                obj = Instantiate(terrain[5], new Vector3(pos.x - scale.z / 2 - 0.1f, pos.y + scale.y / 2, pos.z), Quaternion.Euler(0, 0, 0));
+                obj.transform.localScale = new Vector3(obj.transform.localScale.x, obj.transform.localScale.y, scale.x);
+            }
+            else
+            {
+                //if it's not at the same y height, spawn a wall
+                if (hit.transform.position.y + hit.transform.localScale.y / 2 != pos.y + scale.y / 2)
+                {
+                    //create at top of object
+                    obj = Instantiate(terrain[5], new Vector3(pos.x - scale.z / 2 - 0.1f, pos.y + scale.y / 2, pos.z), Quaternion.Euler(0, 0, 0));
+                    obj.transform.localScale = new Vector3(obj.transform.localScale.x, obj.transform.localScale.y, scale.x);
+                }
+            }
+            #endregion
+        }
+
+        GameObject[] ladders = GameObject.FindGameObjectsWithTag("Ladder");
+        for (int i = 0; i < ladders.Length; i++)
+        {
+            Vector3 pos = ladders[i].transform.position;
+            Vector3 scale = ladders[i].transform.localScale;
+            //Debug.Log(scale.x);
+
+            RaycastHit hit;
+            GameObject obj;
+
+            #region PositiveZ
+            //check left positive z
+            //send raycast to slight above current obj
+            //if no room we draw a wall
+            if (!Physics.Raycast(new Vector3(pos.x, pos.y + 10, pos.z + scale.z / 2 + 0.1f), new Vector3(0, -1, 0), out hit))
+            {
+                obj = Instantiate(terrain[5], new Vector3(pos.x, pos.y + scale.y / 2, pos.z + scale.z / 2), Quaternion.Euler(0, 90, 0));
+                obj.transform.localScale = new Vector3(obj.transform.localScale.x, obj.transform.localScale.y, scale.x);
+            }
+            //else
+            //{
+            //    //if it's not at the same y height, spawn a wall
+            //    if (hit.transform.position.y + hit.transform.localScale.y / 2 != pos.y + scale.y / 2)
+            //    {
+            //        //create at top of object
+            //        obj = Instantiate(terrain[5], new Vector3(pos.x, pos.y + scale.y / 2, pos.z + scale.z / 2), Quaternion.Euler(0, 90, 0));
+            //        obj.transform.localScale = new Vector3(obj.transform.localScale.x, obj.transform.localScale.y, scale.x);
+            //    }
+            //}
+            #endregion
+
+
         }
     }
 
