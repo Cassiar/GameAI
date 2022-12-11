@@ -112,7 +112,7 @@ public class Lsystem : MonoBehaviour
             //if no room we draw a wall
             if (!Physics.Raycast(new Vector3(pos.x, pos.y + 10, pos.z + scale.z / 2 + 0.1f), new Vector3(0, -1, 0), out hit))
             {
-                Instantiate(terrain[5], new Vector3(pos.x, pos.y, pos.z + scale.z / 2), Quaternion.Euler(0, 90, 0));
+                Instantiate(terrain[5], new Vector3(pos.x, pos.y + scale.y / 2, pos.z + scale.z / 2), Quaternion.Euler(0, 90, 0));
             }
             else
             {
@@ -124,7 +124,7 @@ public class Lsystem : MonoBehaviour
                 //if it's not at the same y height, spawn a wall
                 else if (hit.transform.position.y != pos.y)
                 {
-                    Instantiate(terrain[5], new Vector3(pos.x, pos.y, pos.z + scale.z / 2), Quaternion.Euler(0, 90, 0));
+                    Instantiate(terrain[5], new Vector3(pos.x, pos.y + scale.y / 2, pos.z + scale.z / 2), Quaternion.Euler(0, 90, 0));
                 }
             }
             #endregion
@@ -132,7 +132,7 @@ public class Lsystem : MonoBehaviour
             #region NegativeZ
             if (!Physics.Raycast(new Vector3(pos.x, pos.y + 10, pos.z - scale.z / 2 - 0.1f), new Vector3(0, -1, 0), out hit))
             {
-                Instantiate(terrain[5], new Vector3(pos.x, pos.y, pos.z - scale.z / 2), Quaternion.Euler(0, 90, 0));
+                Instantiate(terrain[5], new Vector3(pos.x, pos.y + scale.y / 2, pos.z - scale.z / 2), Quaternion.Euler(0, 90, 0));
             }
             else
             {
@@ -144,7 +144,7 @@ public class Lsystem : MonoBehaviour
                 //if it's not at the same y height, spawn a wall
                 else if (hit.transform.position.y != pos.y)
                 {
-                    Instantiate(terrain[5], new Vector3(pos.x, pos.y, pos.z - scale.z / 2), Quaternion.Euler(0, 90, 0));
+                    Instantiate(terrain[5], new Vector3(pos.x, pos.y + scale.y / 2, pos.z - scale.z / 2), Quaternion.Euler(0, 90, 0));
                 }
             }
             #endregion
@@ -153,7 +153,7 @@ public class Lsystem : MonoBehaviour
             #region PostiveX
             if (!Physics.Raycast(new Vector3(pos.x + scale.x / 2 + 0.1f, pos.y + 10, pos.z), new Vector3(0, -1, 0), out hit))
             {
-                Instantiate(terrain[5], new Vector3(pos.x + scale.x / 2, pos.y, pos.z), Quaternion.Euler(0, 0, 0));
+                Instantiate(terrain[5], new Vector3(pos.x + scale.x / 2, pos.y + scale.y / 2, pos.z), Quaternion.Euler(0, 0, 0));
             }
             else
             {
@@ -165,7 +165,7 @@ public class Lsystem : MonoBehaviour
                 //if it's not at the same y height, spawn a wall
                 else if (hit.transform.position.y != pos.y)
                 {
-                    Instantiate(terrain[5], new Vector3(pos.x + scale.x / 2, pos.y, pos.z), Quaternion.Euler(0, 0, 0));
+                    Instantiate(terrain[5], new Vector3(pos.x + scale.x / 2, pos.y + scale.y / 2, pos.z), Quaternion.Euler(0, 0, 0));
                 }
 
             }
@@ -174,7 +174,7 @@ public class Lsystem : MonoBehaviour
             #region NegativeX
             if (!Physics.Raycast(new Vector3(pos.x - scale.x / 2 - 0.1f, pos.y + 10, pos.z), new Vector3(0, -1, 0), out hit))
             {
-                Instantiate(terrain[5], new Vector3(pos.x - scale.x / 2, pos.y, pos.z), Quaternion.Euler(0, 0, 0));
+                Instantiate(terrain[5], new Vector3(pos.x - scale.x / 2, pos.y + scale.y / 2, pos.z), Quaternion.Euler(0, 0, 0));
             }
             else
             {
@@ -186,7 +186,7 @@ public class Lsystem : MonoBehaviour
                 //if it's not at the same y height, spawn a wall
                 else if (hit.transform.position.y != pos.y)
                 {
-                    Instantiate(terrain[5], new Vector3(pos.x - scale.x / 2, pos.y, pos.z), Quaternion.Euler(0, 0, 0));
+                    Instantiate(terrain[5], new Vector3(pos.x - scale.x / 2, pos.y + scale.y / 2, pos.z), Quaternion.Euler(0, 0, 0));
                 }
 
             }
