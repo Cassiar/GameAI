@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEditor.TerrainTools;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -77,25 +78,189 @@ public class Lsystem : MonoBehaviour
         rules.Add("|5", "|.[+|]");//turn 90 positive with corner
         rules.Add("|6", "|.[-|]"); //turn -90 with corner
 
-        rules.Add("#0", "#[[+#]-#]#"); //make each room three wide
+        rules.Add("#0", "#.#"); //make room connected by corner
         rules.Add("#1", "#*#"); //make a room then a ladder and another room
         rules.Add("#2", "###");//make room longer
         rules.Add("#3", "#@#");//ladder but going down
                                //rules.Add('#', "#[[+#]-#]#[[[+#]-#]#[[+#]-#]]"); //make room 3x3 and set out halls to center
 
+        Stopwatch watch = new Stopwatch();
+        watch.Start();
         IterateSystem();
+        watch.Stop();
+        UnityEngine.Debug.Log("Iterate Time: " + watch.ElapsedMilliseconds);
+        watch.Restart();
 
-        //string test = "";
-        ////print the final string for testing
-        //for (int i = 0; i < buffer.Count; i++)
-        //{
-        //    test += buffer[i] + ", ";
-        //}
-
-        //Debug.Log(test);
-
+        watch.Start();
         DrawObjects();
+        watch.Stop();
+        UnityEngine.Debug.Log("Draw Time: " + watch.ElapsedMilliseconds);
+        watch.Restart();
 
+        watch.Start();
+        DrawWalls();
+        watch.Stop();
+        UnityEngine.Debug.Log("Walls Time: " + watch.ElapsedMilliseconds);
+        watch.Restart();
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+
+    }
+
+    /// <summary>
+    /// Calls the CreateObject method but with
+    /// dungeon alwasy going up
+    /// </summary>
+    /// <param name="terrain"></param>
+    private void CreateObject(GameObject terrain)
+    {
+        CreateObject(terrain, 1);
+    }
+
+    /// <summary>
+    /// Spawn a gameobject at the current position
+    /// </summary>
+    /// <param name="terrain">The object to draw</param>
+    /// <param name="up">1 if the dungeon should move up, -1 if it should move down</param>
+    private void CreateObject(GameObject terrain, short up)
+    {        
+        //figure out if there's a different y height between objects
+        //then update y by the difference
+        height = terrain.transform.localScale.y / 2;
+        float hdiff = Mathf.Abs(height - prevHeight);
+        prevHeight = height;
+        //move forward equal to half the length of the previous object
+        //since origin is in center of model
+        //multiplying by rotation to face correct direction
+        pos += Quaternion.Euler(rot) * new Vector3(prevLength, up * hdiff, 0);
+        //update length to be for this object
+        length = terrain.transform.localScale.x / 2;
+        //then move forward half again so we're half dist
+        //away from end of previous
+        pos += Quaternion.Euler(rot) * new Vector3(length, 0, 0);
+        prevLength = length;
+        RaycastHit hit; 
+        //send raycast to current location
+        //if it hits something then we move the pos up by the terrain y height
+        if (Physics.Raycast(new Vector3(pos.x, pos.y + 10, pos.z), new Vector3(0, -1, 0), out hit))
+        {
+            if (hit.transform.position.y == pos.y)
+            {
+                pos.y += terrain.transform.localScale.y;
+            }
+        }
+        Instantiate(terrain, pos, Quaternion.Euler(rot));
+    }
+
+    /// <summary>
+    /// Expand the buffer based on the rules
+    /// </summary>
+    private void IterateSystem()
+    {
+        //loop for each iteration
+        for (int i = 0; i < numIterations; i++)
+        {
+            //loop for each run through buffer
+            for (int j = 0; j < buffer.Count; j++)
+            {
+                char c = buffer[j];
+                if (ruleNums.ContainsKey(c))
+                {
+                    int num = ruleNums[c];
+                    //generate a random rule to propogate
+                    string randRule = c + Random.Range(0, num).ToString();
+                    //get the rule from the dictionary
+                    string rule = rules[randRule];
+                    //add each new char to next string
+                    for (int k = 0; k < rule.Length; k++)
+                    {
+                        backBuffer.Add(rule[k]);
+                    }
+                }//if this char doesn't have a rule, add it
+                //to the new string anyways.
+                else
+                {
+                    backBuffer.Add(c);
+                }
+            }
+            //update the buffer and clear the 
+            //back buffer for the next iteration
+            buffer = new List<char>(backBuffer);
+            backBuffer.Clear();
+        }
+    }
+
+    /// <summary>
+    /// Draw dungeon based on buffer 
+    /// </summary>
+    private void DrawObjects()
+    {
+        //draw the objects
+        for (int i = 0; i < buffer.Count; i++)
+        {
+            switch (buffer[i])
+            {
+                case '|': //hall
+                    CreateObject(terrain[0]);
+                    break;
+                case '#': //room
+                    if (buffer[i - 1] == '@')
+                    {
+
+                        CreateObject(terrain[1], -1);
+                    }
+                    else
+                    {
+                        CreateObject(terrain[1]);
+                    }
+                    break;
+                case '.': //corner
+                    CreateObject(terrain[2]);
+                    break;
+                case '*': //ladder
+                    CreateObject(terrain[3]);
+                    break;
+                case '@': //ladder going down
+                    CreateObject(terrain[3], -1);
+                    break;
+                case '[':
+                    positions.Push(pos);
+                    rotations.Push(rot);
+                    prevLengths.Push(prevLength);
+                    prevHeights.Push(prevHeight);
+                    break;
+                case ']':
+                    //if the previous dugneon piece was a hall
+                    //then we're at the end of the hallway so
+                    //we should spawn some sort of obstacle
+                    if (buffer[i - 1] == '|')
+                    {
+                        //get random obstacle
+                        int rand = Random.Range(0, obstacles.Count);
+                        //need to move up since orgin is in center of model
+                        pos += Quaternion.Euler(rot) * new Vector3(length, obstacles[rand].transform.position.y / 2, 0);
+                        Instantiate(obstacles[rand], pos, Quaternion.Euler(rot));
+                    }
+                    pos = positions.Pop();
+                    rot = rotations.Pop();
+                    prevLength = prevLengths.Pop();
+                    prevHeight = prevHeights.Pop();
+                    break;
+                case '+':
+                    rot.y += 90;// + Random.Range(-5.0f, 5.0f);
+                    break;
+                case '-':
+                    rot.y -= 90;// + Random.Range(-5.0f, 5.0f);
+                    break;
+            }
+        }
+    }
+
+    private void DrawWalls()
+    {
         //loop through all the rooms and see if 
         //adjacent spots are rooms or not, then 
         //draw walls if not adjacent
@@ -383,171 +548,6 @@ public class Lsystem : MonoBehaviour
                 }
             }
             #endregion
-        }
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
-    /// <summary>
-    /// Calls the CreateObject method but with
-    /// dungeon alwasy going up
-    /// </summary>
-    /// <param name="terrain"></param>
-    private void CreateObject(GameObject terrain)
-    {
-        CreateObject(terrain, 1);
-    }
-
-    /// <summary>
-    /// Spawn a gameobject at the current position
-    /// </summary>
-    /// <param name="terrain">The object to draw</param>
-    /// <param name="up">1 if the dungeon should move up, -1 if it should move down</param>
-    private void CreateObject(GameObject terrain, short up)
-    {        
-        //figure out if there's a different y height between objects
-        //then update y by the difference
-        height = terrain.transform.localScale.y / 2;
-        float hdiff = Mathf.Abs(height - prevHeight);
-        prevHeight = height;
-        //move forward equal to half the length of the previous object
-        //since origin is in center of model
-        //multiplying by rotation to face correct direction
-        pos += Quaternion.Euler(rot) * new Vector3(prevLength, up * hdiff, 0);
-        //update length to be for this object
-        length = terrain.transform.localScale.x / 2;
-        //then move forward half again so we're half dist
-        //away from end of previous
-        pos += Quaternion.Euler(rot) * new Vector3(length, 0, 0);
-        prevLength = length;
-        RaycastHit hit; 
-        //send raycast to current location
-        //if it hits something then we move the pos up by the terrain y height
-        if (Physics.Raycast(new Vector3(pos.x, pos.y + 10, pos.z), new Vector3(0, -1, 0), out hit))
-        {
-            if (hit.transform.position.y == pos.y)
-            {
-                pos.y += terrain.transform.localScale.y;
-            }
-        }
-        GameObject obj = Instantiate(terrain, pos, Quaternion.Euler(rot));
-    }
-
-    /// <summary>
-    /// Move the object up by the y height
-    /// of a hall or room
-    /// </summary>
-    public void MoveUp()
-    {
-        pos.y += terrain[1].transform.localScale.y;
-        Debug.Log(pos.y);
-    }
-
-    /// <summary>
-    /// Expand the buffer based on the rules
-    /// </summary>
-    private void IterateSystem()
-    {
-        //loop for each iteration
-        for (int i = 0; i < numIterations; i++)
-        {
-            //loop for each run through buffer
-            for (int j = 0; j < buffer.Count; j++)
-            {
-                char c = buffer[j];
-                if (ruleNums.ContainsKey(c))
-                {
-                    int num = ruleNums[c];
-                    //generate a random rule to propogate
-                    string randRule = c + Random.Range(0, num).ToString();
-                    //get the rule from the dictionary
-                    string rule = rules[randRule];
-                    //add each new char to next string
-                    for (int k = 0; k < rule.Length; k++)
-                    {
-                        backBuffer.Add(rule[k]);
-                    }
-                }//if this char doesn't have a rule, add it
-                //to the new string anyways.
-                else
-                {
-                    backBuffer.Add(c);
-                }
-            }
-            //update the buffer and clear the 
-            //back buffer for the next iteration
-            buffer = new List<char>(backBuffer);
-            backBuffer.Clear();
-        }
-    }
-
-    /// <summary>
-    /// Draw dungeon based on buffer 
-    /// </summary>
-    private void DrawObjects()
-    {
-        //draw the objects
-        for (int i = 0; i < buffer.Count; i++)
-        {
-            switch (buffer[i])
-            {
-                case '|': //hall
-                    CreateObject(terrain[0]);
-                    break;
-                case '#': //room
-                    if (buffer[i - 1] == '@')
-                    {
-
-                        CreateObject(terrain[1], -1);
-                    }
-                    else
-                    {
-                        CreateObject(terrain[1]);
-                    }
-                    break;
-                case '.': //corner
-                    CreateObject(terrain[2]);
-                    break;
-                case '*': //ladder
-                    CreateObject(terrain[3]);
-                    break;
-                case '@': //ladder going down
-                    CreateObject(terrain[3], -1);
-                    break;
-                case '[':
-                    positions.Push(pos);
-                    rotations.Push(rot);
-                    prevLengths.Push(prevLength);
-                    prevHeights.Push(prevHeight);
-                    break;
-                case ']':
-                    //if the previous dugneon piece was a hall
-                    //then we're at the end of the hallway so
-                    //we should spawn some sort of obstacle
-                    if (buffer[i - 1] == '|')
-                    {
-                        //get random obstacle
-                        int rand = Random.Range(0, obstacles.Count);
-                        //need to move up since orgin is in center of model
-                        pos += Quaternion.Euler(rot) * new Vector3(length, obstacles[rand].transform.position.y / 2, 0);
-                        Instantiate(obstacles[rand], pos, Quaternion.Euler(rot));
-                    }
-                    pos = positions.Pop();
-                    rot = rotations.Pop();
-                    prevLength = prevLengths.Pop();
-                    prevHeight = prevHeights.Pop();
-                    break;
-                case '+':
-                    rot.y += 90;// + Random.Range(-5.0f, 5.0f);
-                    break;
-                case '-':
-                    rot.y -= 90;// + Random.Range(-5.0f, 5.0f);
-                    break;
-            }
         }
     }
 }
